@@ -1,6 +1,9 @@
 package com.github.heqiao2010;
 
 public class LunarConst {
+	public final static int MINIYEAR = 1900;
+	public final static int MAXYEAR = 2099;
+	
 	/**
 	 * 1900年-2099年间的农历信息.<br>
 	 * <li>每个数组的第一个数表示该年闰月月份，为0表示不闰月</li>
