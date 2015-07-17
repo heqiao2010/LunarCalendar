@@ -84,10 +84,12 @@ public class LunarCalendar {
 		int retI = binSearch(solarCodes, searchNum);
 		if(-1 == retI){ //出错
 			return -1;
-		} else if( 0 == retI ) //在上一年
+		} else if( 0 == retI ) {//在上一年
+			
+		}
 		
-		Calendar.
-		solarCodes[retI];
+//		Calendar.
+//		solarCodes[retI];
 		
 		
 		
@@ -100,13 +102,13 @@ public class LunarCalendar {
 			start = 2;
 			if( secondDayNum > searchNum){ 
 				//所求农历位于该年一月份，计算和农历一月一日的天数差
-				int segDays = new Date(solarYear, solarMonth, solarDay).get
+//				int segDays = new Date(solarYear, solarMonth, solarDay).get(1);
 			}
 		} else {
 			//这年农历一月一号这天公历日期的年份为当前年
 			start = 0;
 		}
-		int searRet = binSearch(LunarConst.LuarInfo[lunarIndex], searchNum, start ,LunarConst.LuarInfo[lunarIndex].length - 1);
+//		int searRet = binSearch(LunarConst.LuarInfo[lunarIndex], searchNum, start ,LunarConst.LuarInfo[lunarIndex].length - 1);
 		
 		
 		int searchRet = binSearch(LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR], searchNum);
@@ -115,13 +117,13 @@ public class LunarCalendar {
 		} else {
 			
 		}
-		return index;
+		return 1;
 	}
 	
 	/**
 	 * 计算两个日期之差
 	 */
-	public static dateDiff(){
+	public static void dateDiff(){
 		
 	}
 	
@@ -173,6 +175,35 @@ public class LunarCalendar {
 		sb.append(LunarConst.LunarYearName[lunarYear % 100 / 10]);
 		sb.append(LunarConst.LunarYearName[lunarYear % 10]);
 		return sb.toString();
+	}
+	
+	/**
+	 * 求两个公历日期之差，field可以为年月日，时分秒<br>
+	 * 一年按365天计算，一个月按30天计算<br>
+	 * @param solar1
+	 * @param solar2
+	 * @param field
+	 * @return
+	 */
+	public static long solarDiff(Calendar solar1, Calendar solar2, int field){
+		long t1 = solar1.getTimeInMillis();
+		long t2 = solar2.getTimeInMillis();
+		switch(field){
+		case Calendar.SECOND:
+			return (t1 - t2) / 1000;
+		case Calendar.MINUTE:
+			return (t1 - t2) / (60 * 1000);
+		case Calendar.HOUR:
+			return (t1 - t2) / (3600 * 1000);
+		case Calendar.DATE:
+			return (t1 - t2) / (24 * 3600 * 1000);
+		case Calendar.MONTH:
+			return (t1 - t2) / (30 * 24 * 3600 * 1000);
+		case Calendar.YEAR:
+			return (t1 - t2) / (365 * 24 * 3600 * 1000);
+		default:
+			return -1;
+		}
 	}
 	
 	// getter and setter
@@ -249,7 +280,7 @@ public class LunarCalendar {
 		int lunarDay = 9;
 		int lunarMonth = 12;
 		int lunarYear = 1048;
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
+		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		
 		System.out.println(c.getDayName(lunarDay));
 		System.out.println(c.getMonthName(lunarMonth));
@@ -262,5 +293,17 @@ public class LunarCalendar {
 		System.out.println(df.format(c1.getTime()));
 		System.out.println(binSearch(LunarConst.LuarInfo[1900-1900], 1121));
 		
+		c1.set(Calendar.YEAR, 1991);
+		c1.set(Calendar.MONTH, 3);
+		c1.set(Calendar.DATE, 1);
+		c1.set(Calendar.SECOND, 10);
+		
+		c2.set(Calendar.YEAR, 1991);
+		c2.set(Calendar.MONTH, 2);
+		c2.set(Calendar.DATE, 1);
+		c2.set(Calendar.SECOND, 10);
+		System.out.println(solarDiff(c1, c2, Calendar.DATE));
+		System.out.println(df.format(c1.getTime()));
+		System.out.println(df.format(c2.getTime()));
 	}
 }
