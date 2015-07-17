@@ -2,6 +2,7 @@ package com.github.heqiao2010;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class LunarCalendar {
 	//农历年，和公历是一样的
@@ -9,17 +10,17 @@ public class LunarCalendar {
 	//农历月
 	private int month; 
 	//农历日期
-	private int day; 
+	private int date; 
 	//农历的闰月，如果不闰月，默认为0
 	public int leapMonth = 0;
 	//公历日期
-	public Calendar solar = null;
+	public GregorianCalendar solar = null;
 	
 	/**
 	 * 无参构造子，默认为当前日期
 	 */
 	public LunarCalendar(){
-		solar = Calendar.getInstance();
+		solar = new GregorianCalendar();
 	}
 	
 	/**
@@ -29,11 +30,11 @@ public class LunarCalendar {
 	 * @param day
 	 * @param isLunar
 	 */
-	public LunarCalendar(int year, int month, int day, boolean isLunar){
+	public LunarCalendar(int year, int month, int date, boolean isLunar){
 		if(isLunar){
 			this.year = year;
 			this.month = month;
-			this.day = day;
+			this.date = date;
 		} else {
 			
 		}
@@ -74,48 +75,25 @@ public class LunarCalendar {
 	 * @param solarDay
 	 * @return
 	 */
-	private int findNearLunarInfo(int solarYear, int solarMonth, int solarDay){
-		if(solarYear < LunarConst.MINIYEAR && solarYear > LunarConst.MAXYEAR){
+	private int findNearLunarInfo(int solarYear, int solarMonth, int solarDate){
+		if (solarYear < LunarConst.MINIYEAR && solarYear > LunarConst.MAXYEAR) {
 			return -1;
 		}
-		int searchNum = 100 * solarMonth + solarDay; //查询码
-		int lunarIndex = solarYear - LunarConst.MINIYEAR;
+		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
+		int leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
 		int solarCodes[] = builderSolarCodes(solarYear);
-		int retI = binSearch(solarCodes, searchNum);
-		if(-1 == retI){ //出错
+		int newMonth = binSearch(solarCodes, solarCode);
+		if(-1 == newMonth){ //出错
 			return -1;
-		} else if( 0 == retI ) {//在上一年
+		} else if( 0 == newMonth ) {//在上一年
+			
+		} else if( 13 == newMonth) {//在下一年
 			
 		}
-		
-//		Calendar.
-//		solarCodes[retI];
-		
-		
-		
-		
-		int firstDayNum = LunarConst.LuarInfo[lunarIndex][1]; //取出这年农历一月对应的公历码
-		int secondDayNum = LunarConst.LuarInfo[lunarIndex][2];
-		int start = 0;
-		if(firstDayNum > 999){
-			//这年农历一月一号这天公历日期的年份为上一年年份
-			start = 2;
-			if( secondDayNum > searchNum){ 
-				//所求农历位于该年一月份，计算和农历一月一日的天数差
-//				int segDays = new Date(solarYear, solarMonth, solarDay).get(1);
-			}
-		} else {
-			//这年农历一月一号这天公历日期的年份为当前年
-			start = 0;
-		}
-//		int searRet = binSearch(LunarConst.LuarInfo[lunarIndex], searchNum, start ,LunarConst.LuarInfo[lunarIndex].length - 1);
-		
-		
-		int searchRet = binSearch(LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR], searchNum);
-		if(0 == searchRet){ //所找日期在上一年
-			
-		} else {
-			
+		else {
+			this.date = new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+			this.year = solarYear;
+			this.month = newMonth;
 		}
 		return 1;
 	}
@@ -178,6 +156,21 @@ public class LunarCalendar {
 	}
 	
 	/**
+	 * 判断两个整数所代表公历日期的差值<br>
+	 * 一年按365天计算，一个月按30天计算<br>
+	 * @param solarCode1
+	 * @param solarCode2
+	 * @return
+	 */
+	public static long solarDateCodesDiff(int solarCode1, int solarCode2, int field) {
+		GregorianCalendar c1 = new GregorianCalendar(solarCode1 / 10000, solarCode1 % 10000 / 100,
+				solarCode1 % 10000 % 100);
+		GregorianCalendar c2 = new GregorianCalendar(solarCode2 / 10000, solarCode2 % 10000 / 100,
+				solarCode2 % 10000 % 100);
+		return solarDiff(c1, c2, field);
+	}
+	
+	/**
 	 * 求两个公历日期之差，field可以为年月日，时分秒<br>
 	 * 一年按365天计算，一个月按30天计算<br>
 	 * @param solar1
@@ -223,12 +216,12 @@ public class LunarCalendar {
 		this.month = month;
 	}
 
-	public int getDay() {
-		return day;
+	public int getDate() {
+		return date;
 	}
 
-	public void setDay(int day) {
-		this.day = day;
+	public void setDate(int date) {
+		this.date = date;
 	}
 
 	public int getLeapMonth() {
@@ -239,11 +232,11 @@ public class LunarCalendar {
 		this.leapMonth = leapMonth;
 	}
 
-	public Calendar getSolar() {
+	public GregorianCalendar getSolar() {
 		return solar;
 	}
 
-	public void setSolar(Calendar solar) {
+	public void setSolar(GregorianCalendar solar) {
 		this.solar = solar;
 	}
 	
