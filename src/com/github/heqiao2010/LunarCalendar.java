@@ -69,33 +69,42 @@ public class LunarCalendar {
 	}
 	
 	/**
-	 * 在LunarInfo中，找到和公历日期YYYY-MM-DD最接近的两个日期中较小的一个
+	 * 通过给定公历日期，计算农历日期
 	 * @param solarYear
 	 * @param solarMonth
 	 * @param solarDay
 	 * @return
 	 */
-	private int findNearLunarInfo(int solarYear, int solarMonth, int solarDate){
+	private boolean computeBySolarDate(int solarYear, int solarMonth, int solarDate){
+		boolean isSuccess = true;
 		if (solarYear < LunarConst.MINIYEAR && solarYear > LunarConst.MAXYEAR) {
-			return -1;
+			return !isSuccess;
 		}
 		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
 		int leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
 		int solarCodes[] = builderSolarCodes(solarYear);
 		int newMonth = binSearch(solarCodes, solarCode);
 		if(-1 == newMonth){ //出错
-			return -1;
-		} else if( 0 == newMonth ) {//在上一年
-			
-		} else if( 13 == newMonth) {//在下一年
-			
-		}
-		else {
-			this.date = new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+			return !isSuccess;
+		} else if( 0 == newMonth ) {//在上一年，肯定是公历1月或者12月
+			int[] preSolarCodes = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR - 1];
+			int preSolarCode = preSolarCodes[preSolarCodes.length - 1];
+			int nearCode = 10000 * (preSolarCode % 100 == 13 ? solarYear + 1 : solarYear)
+					+ 100 * (preSolarCode % 100 == 13 ? 1 : preSolarCode % 100) 
+					+ preSolarCode % 100;
+			this.date = 1 + new Long(solarDateCodesDiff(solarCode, nearCode, Calendar.DATE)).intValue();
+			this.year = preSolarCode % 100 == 13 ? solarYear : solarYear - 1;
+			this.month = (preSolarCode % 100 == 13 ? 1 : preSolarCode % 100);
+		} else {
+			this.date = 1 + new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
 			this.year = solarYear;
-			this.month = newMonth;
+			if(0!=leapMonth && leapMonth < newMonth){
+				this.month = newMonth + 1;
+			} else {
+				this.month = newMonth;
+			}
 		}
-		return 1;
+		return isSuccess;
 	}
 	
 	/**
@@ -110,10 +119,15 @@ public class LunarCalendar {
 	 * @param solar
 	 * @return LunarCalendar
 	 */
-	public static LunarCalendar solar2Lunar(Calendar solar){
+	public static LunarCalendar solar2Lunar(Calendar solar) {
 		LunarCalendar ret = new LunarCalendar();
-		
-		return ret;
+		if(ret.computeBySolarDate(solar.get(Calendar.YEAR),
+				solar.get(Calendar.MONTH) + 1, solar.get(Calendar.DATE))){
+			return ret;
+		} else {
+			ret = null;
+			return ret;
+		}
 	}
 	
 	/**
@@ -122,7 +136,7 @@ public class LunarCalendar {
 	 * @param filed
 	 * @param n
 	 */
-	public void add(int field, int n){
+	public void solarAdd(int field, int n){
 		this.getSolar().add(field, n);
 	}
 
@@ -163,9 +177,9 @@ public class LunarCalendar {
 	 * @return
 	 */
 	public static long solarDateCodesDiff(int solarCode1, int solarCode2, int field) {
-		GregorianCalendar c1 = new GregorianCalendar(solarCode1 / 10000, solarCode1 % 10000 / 100,
+		GregorianCalendar c1 = new GregorianCalendar(solarCode1 / 10000, solarCode1 % 10000 / 100 - 1,
 				solarCode1 % 10000 % 100);
-		GregorianCalendar c2 = new GregorianCalendar(solarCode2 / 10000, solarCode2 % 10000 / 100,
+		GregorianCalendar c2 = new GregorianCalendar(solarCode2 / 10000, solarCode2 % 10000 / 100 - 1,
 				solarCode2 % 10000 % 100);
 		return solarDiff(c1, c2, field);
 	}
@@ -183,17 +197,17 @@ public class LunarCalendar {
 		long t2 = solar2.getTimeInMillis();
 		switch(field){
 		case Calendar.SECOND:
-			return (t1 - t2) / 1000;
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(1000));
 		case Calendar.MINUTE:
-			return (t1 - t2) / (60 * 1000);
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(60 * 1000));
 		case Calendar.HOUR:
-			return (t1 - t2) / (3600 * 1000);
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(3600 * 1000));
 		case Calendar.DATE:
-			return (t1 - t2) / (24 * 3600 * 1000);
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(24 * 3600 * 1000));
 		case Calendar.MONTH:
-			return (t1 - t2) / (30 * 24 * 3600 * 1000);
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(30 * 24 * 3600 * 1000));
 		case Calendar.YEAR:
-			return (t1 - t2) / (365 * 24 * 3600 * 1000);
+			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(365 * 24 * 3600 * 1000));
 		default:
 			return -1;
 		}
@@ -264,39 +278,56 @@ public class LunarCalendar {
 		return min; //返回较小的一个
 	}
 	
+	@Override
+	public String toString() {
+		if(this.year < 1900 || this.year > 2099
+				|| this.month < 1 || this.month > 12
+				|| this.date < 1 || this.date > 30){
+			return "Wrong lunar date.";
+		}
+		return this.getYearName(this.year) + "年"
+				+ this.getMonthName(this.month) + "月"
+				+ this.getDayName(this.date);
+	}
+
 	/**
 	 * Test Main!
 	 * @param args
 	 */
 	public static void main(String[] args){
-		LunarCalendar c = new LunarCalendar();
-		int lunarDay = 9;
-		int lunarMonth = 12;
-		int lunarYear = 1048;
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		
-		System.out.println(c.getDayName(lunarDay));
-		System.out.println(c.getMonthName(lunarMonth));
-		System.out.println(c.getYearName(lunarYear));
+//		LunarCalendar c = new LunarCalendar();
+//		int lunarDay = 9;
+//		int lunarMonth = 12;
+//		int lunarYear = 1048;
+//		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//		
+//		System.out.println(c.getDayName(lunarDay));
+//		System.out.println(c.getMonthName(lunarMonth));
+//		System.out.println(c.getYearName(lunarYear));
+//		
+//		Calendar c1 = Calendar.getInstance();
+//		Calendar c2 = Calendar.getInstance();
+//		System.out.println(df.format(c1.getTime()));
+//		c1.add(Calendar.MONTH, 10);
+//		System.out.println(df.format(c1.getTime()));
+//		System.out.println(binSearch(LunarConst.LuarInfo[1900-1900], 1121));
+//		
+//		c1.set(Calendar.YEAR, 1991);
+//		c1.set(Calendar.MONTH, 3);
+//		c1.set(Calendar.DATE, 1);
+//		c1.set(Calendar.SECOND, 10);
+//		
+//		c2.set(Calendar.YEAR, 1991);
+//		c2.set(Calendar.MONTH, 2);
+//		c2.set(Calendar.DATE, 1);
+//		c2.set(Calendar.SECOND, 10);
+//		System.out.println(solarDiff(c1, c2, Calendar.DATE));
+//		System.out.println(df.format(c1.getTime()));
+//		System.out.println(df.format(c2.getTime()));
 		
 		Calendar c1 = Calendar.getInstance();
-		Calendar c2 = Calendar.getInstance();
-		System.out.println(df.format(c1.getTime()));
-		c1.add(Calendar.MONTH, 10);
-		System.out.println(df.format(c1.getTime()));
-		System.out.println(binSearch(LunarConst.LuarInfo[1900-1900], 1121));
+		LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
+		System.out.println(luanr);
 		
-		c1.set(Calendar.YEAR, 1991);
-		c1.set(Calendar.MONTH, 3);
-		c1.set(Calendar.DATE, 1);
-		c1.set(Calendar.SECOND, 10);
-		
-		c2.set(Calendar.YEAR, 1991);
-		c2.set(Calendar.MONTH, 2);
-		c2.set(Calendar.DATE, 1);
-		c2.set(Calendar.SECOND, 10);
-		System.out.println(solarDiff(c1, c2, Calendar.DATE));
-		System.out.println(df.format(c1.getTime()));
-		System.out.println(df.format(c2.getTime()));
 	}
 }
