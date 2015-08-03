@@ -1,7 +1,6 @@
 package com.github.heqiao2010;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class LunarCalendar {
@@ -24,26 +23,31 @@ public class LunarCalendar {
 	}
 	
 	/**
-	 * 
+	 * 通过年、月、日构造LunarCalendar
 	 * @param year
 	 * @param month
 	 * @param day
-	 * @param isLunar
+	 * @param isLunar 是否为农历日期
+	 * @param isleapMonth 在为农历日期的前提下，是否闰月
 	 */
-	public LunarCalendar(int year, int month, int date, boolean isLunar){
+	public LunarCalendar(int year, int month, int date, boolean isLunar, boolean isleapMonth){
 		if(isLunar){
+			this.computeByLunarDate(year, month, date, isleapMonth);
 			this.year = year;
 			this.month = month;
 			this.date = date;
 		} else {
-			
+			this.computeBySolarDate(year, month, date);
+			this.getSolar().set(Calendar.YEAR, year);
+			this.getSolar().set(Calendar.MONTH, month - 1);
+			this.getSolar().set(Calendar.DATE, date);
 		}
 	}
 	
 	/**
 	 * 创建LunarInfo中某一年的一列公历日历编码<br>
 	 * 公历日历编码：年份+月份+天，用于查询某个公历日期在某个LunarInfo列的哪一个区间<br>
-	 * @return
+	 * @return int[]
 	 */
 	private int[] builderSolarCodes(int solarYear){
 		if(solarYear < LunarConst.MINIYEAR && solarYear > LunarConst.MAXYEAR){
@@ -69,6 +73,50 @@ public class LunarCalendar {
 	}
 	
 	/**
+	 * Adds the specified (signed) amount of time to the given calendar field
+	 * @param field
+	 * @param amount
+	 */
+	public void add(int field, int amount){
+		this.getSolar().add(field, amount);
+		this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), 
+				this.getSolar().get(Calendar.MONTH), 
+				this.getSolar().get(Calendar.DATE));
+	}
+	
+	/**
+	 * 通过给定的农历日期，公历日期
+	 * @param lunarYear
+	 * @param lunarMonth
+	 * @param lunarDate
+	 * @param isleapMonth
+	 * @return
+	 */
+	private boolean computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth){
+		boolean isSuccess = true;
+		if (lunarYear < LunarConst.MINIYEAR && lunarYear > LunarConst.MAXYEAR) {
+			isSuccess = false;
+			return isSuccess;
+		}
+		this.year = lunarYear;
+		this.month = lunarMonth;
+		this.date = lunarDate;
+		int solarMontDate = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][lunarMonth];
+		int leapMonth = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][0];
+		if (leapMonth !=0 && 
+				(lunarMonth > leapMonth || (lunarMonth == leapMonth && isleapMonth))) {
+			// 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
+			// 闰月，且当前农历月等于闰月月份，并且此农历月为闰月，取下一个月的LunarInfo码
+			solarMontDate = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][lunarMonth + 1];
+		} 
+		this.getSolar().set(Calendar.YEAR, lunarYear);
+		this.getSolar().set(Calendar.MONTH, solarMontDate / 100);
+		this.getSolar().set(Calendar.DATE, solarMontDate % 100);
+		this.add(Calendar.DATE, lunarDate);
+		return isSuccess;
+	}
+	
+	/**
 	 * 通过给定公历日期，计算农历日期
 	 * @param solarYear
 	 * @param solarMonth
@@ -78,7 +126,8 @@ public class LunarCalendar {
 	private boolean computeBySolarDate(int solarYear, int solarMonth, int solarDate){
 		boolean isSuccess = true;
 		if (solarYear < LunarConst.MINIYEAR && solarYear > LunarConst.MAXYEAR) {
-			return !isSuccess;
+			isSuccess = false;
+			return isSuccess;
 		}
 		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
 		int leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
@@ -86,17 +135,27 @@ public class LunarCalendar {
 		int newMonth = binSearch(solarCodes, solarCode);
 		if(-1 == newMonth){ //出错
 			return !isSuccess;
-		} else if( 0 == newMonth ) {//在上一年，肯定是公历1月或者12月
-			int[] preSolarCodes = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR - 1];
-			int preSolarCode = preSolarCodes[preSolarCodes.length - 1];
-			int nearCode = 10000 * (preSolarCode % 100 == 13 ? solarYear + 1 : solarYear)
-					+ 100 * (preSolarCode % 100 == 13 ? 1 : preSolarCode % 100) 
-					+ preSolarCode % 100;
-			this.date = 1 + new Long(solarDateCodesDiff(solarCode, nearCode, Calendar.DATE)).intValue();
-			this.year = preSolarCode % 100 == 13 ? solarYear : solarYear - 1;
-			this.month = (preSolarCode % 100 == 13 ? 1 : preSolarCode % 100);
+		} else if( 0 == newMonth ) {//在上一年
+			solarYear--;
+			int[] preSolarCodes = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR];
+			// 取上年农历12月1号公历日期码
+			int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; //上一年12月
+			nearSolarCode = (nearSolarCode / 100 == 13 ? solarYear + 1 : solarYear) * 10000 + 
+					(nearSolarCode / 100 == 13 ? nearSolarCode - 1200 : nearSolarCode);
+			if(nearSolarCode > solarCode){//此公历日期在上一年农历12月1号，之前，即在上年农历11月内
+				newMonth = 11;
+				//取农历11月的公历码
+				nearSolarCode = solarYear * 10000 + preSolarCodes[preSolarCodes.length - 2];
+			} else {//此公历日期在上一年农历12月内
+				newMonth = 12;
+			}
+			int xdate = new Long(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
+			this.date = 1 + (xdate < 0 ? -xdate : xdate);
+			this.year = solarYear;
+			this.month = newMonth;
 		} else {
-			this.date = 1 + new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+			int xdate = new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+			this.date = 1 + (xdate < 0 ? -xdate : xdate);
 			this.year = solarYear;
 			if(0!=leapMonth && leapMonth < newMonth){
 				this.month = newMonth + 1;
@@ -127,6 +186,23 @@ public class LunarCalendar {
 		} else {
 			ret = null;
 			return ret;
+		}
+	}
+	
+	/**
+	 * 农历转公历
+	 * @param lunarYear
+	 * @param lunarMonth
+	 * @param LunarDate
+	 * @param isLeapMonth
+	 * @return
+	 */
+	public static Calendar lunar2Solar(int lunarYear, int lunarMonth, int LunarDate, boolean isLeapMonth){
+		LunarCalendar ret = new LunarCalendar();
+		if(ret.computeByLunarDate(lunarYear, lunarMonth, LunarDate, isLeapMonth)){
+			return ret.getSolar();
+		} else {
+			return null;
 		}
 	}
 	
@@ -275,7 +351,13 @@ public class LunarCalendar {
 				return newIndex;
 			}
 		}
-		return min; //返回较小的一个
+		if(array[max] == n){
+			return max;
+		} else if(array[min] == n){
+			return min;
+		} else {
+			return min; //返回较小的一个
+		}
 	}
 	
 	@Override
@@ -325,9 +407,25 @@ public class LunarCalendar {
 //		System.out.println(df.format(c1.getTime()));
 //		System.out.println(df.format(c2.getTime()));
 		
+		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
 		Calendar c1 = Calendar.getInstance();
-		LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
-		System.out.println(luanr);
+		for(int i=0; i<1000; i++){
+			c1.add(Calendar.DATE, 1);
+			LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
+			System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
+		}
+		
+		/**
+		 * Solar：2016-12-29Lunar：Wrong lunar date.
+		 * Solar：2016-12-30Lunar：Wrong lunar date.
+		 * Solar：2016-12-31Lunar：Wrong lunar date.
+		 */
+//		c1.set(Calendar.YEAR, 2016);
+//		c1.set(Calendar.MONTH, 11);
+//		c1.set(Calendar.DATE, 29);
+//		LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
+//		System.out.println();
+//		System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
 		
 	}
 }
