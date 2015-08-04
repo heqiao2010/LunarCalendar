@@ -139,7 +139,8 @@ public class LunarCalendar {
 			solarYear--;
 			int[] preSolarCodes = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR];
 			// 取上年农历12月1号公历日期码
-			int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; //上一年12月
+			int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; //上一年12月1号
+			//下一年公历1月表示为了13月，这里做翻译
 			nearSolarCode = (nearSolarCode / 100 == 13 ? solarYear + 1 : solarYear) * 10000 + 
 					(nearSolarCode / 100 == 13 ? nearSolarCode - 1200 : nearSolarCode);
 			if(nearSolarCode > solarCode){//此公历日期在上一年农历12月1号，之前，即在上年农历11月内
@@ -150,15 +151,21 @@ public class LunarCalendar {
 				newMonth = 12;
 			}
 			int xdate = new Long(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
-			this.date = 1 + (xdate < 0 ? -xdate : xdate);
+			if(xdate < 0){
+				System.out.println("--------------solarCode----------:" + solarCode);
+			}
+			this.date = 1 + xdate;
 			this.year = solarYear;
 			this.month = newMonth;
 		} else {
 			int xdate = new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
-			this.date = 1 + (xdate < 0 ? -xdate : xdate);
+			if(xdate < 0){
+				System.out.println("--------------solarCode----------:" + solarCode);
+			}
+			this.date = 1 + xdate;
 			this.year = solarYear;
 			if(0!=leapMonth && leapMonth < newMonth){
-				this.month = newMonth + 1;
+				this.month = newMonth - 1;
 			} else {
 				this.month = newMonth;
 			}
@@ -285,7 +292,7 @@ public class LunarCalendar {
 		case Calendar.YEAR:
 			return (long) Math.rint(Double.valueOf(t1 - t2) / Double.valueOf(365 * 24 * 3600 * 1000));
 		default:
-			return -1;
+			return -1; 
 		}
 	}
 	
@@ -336,11 +343,16 @@ public class LunarCalendar {
 	 * @param n
 	 * @return 
 	 */
-	private static int binSearch(int[] array, int n){
+	public static int binSearch(int[] array, int n){
 		if (null == array || array.length == 0){
 			return -1;
 		}
 		int min = 0, max = array.length - 1;
+		if(n <= array[min]){
+			return min;
+		} else if(n >= array[max]){
+			return max;
+		}
 		while(max - min > 1){
 			int newIndex = (max + min) / 2; //二分
 			if(array[newIndex] > n){ //取小区间
@@ -356,7 +368,7 @@ public class LunarCalendar {
 		} else if(array[min] == n){
 			return min;
 		} else {
-			return min; //返回较小的一个
+			return min; //返回 较小的一个
 		}
 	}
 	
@@ -370,62 +382,5 @@ public class LunarCalendar {
 		return this.getYearName(this.year) + "年"
 				+ this.getMonthName(this.month) + "月"
 				+ this.getDayName(this.date);
-	}
-
-	/**
-	 * Test Main!
-	 * @param args
-	 */
-	public static void main(String[] args){
-//		LunarCalendar c = new LunarCalendar();
-//		int lunarDay = 9;
-//		int lunarMonth = 12;
-//		int lunarYear = 1048;
-//		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//		
-//		System.out.println(c.getDayName(lunarDay));
-//		System.out.println(c.getMonthName(lunarMonth));
-//		System.out.println(c.getYearName(lunarYear));
-//		
-//		Calendar c1 = Calendar.getInstance();
-//		Calendar c2 = Calendar.getInstance();
-//		System.out.println(df.format(c1.getTime()));
-//		c1.add(Calendar.MONTH, 10);
-//		System.out.println(df.format(c1.getTime()));
-//		System.out.println(binSearch(LunarConst.LuarInfo[1900-1900], 1121));
-//		
-//		c1.set(Calendar.YEAR, 1991);
-//		c1.set(Calendar.MONTH, 3);
-//		c1.set(Calendar.DATE, 1);
-//		c1.set(Calendar.SECOND, 10);
-//		
-//		c2.set(Calendar.YEAR, 1991);
-//		c2.set(Calendar.MONTH, 2);
-//		c2.set(Calendar.DATE, 1);
-//		c2.set(Calendar.SECOND, 10);
-//		System.out.println(solarDiff(c1, c2, Calendar.DATE));
-//		System.out.println(df.format(c1.getTime()));
-//		System.out.println(df.format(c2.getTime()));
-		
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
-		Calendar c1 = Calendar.getInstance();
-		for(int i=0; i<1000; i++){
-			c1.add(Calendar.DATE, 1);
-			LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
-			System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
-		}
-		
-		/**
-		 * Solar：2016-12-29Lunar：Wrong lunar date.
-		 * Solar：2016-12-30Lunar：Wrong lunar date.
-		 * Solar：2016-12-31Lunar：Wrong lunar date.
-		 */
-//		c1.set(Calendar.YEAR, 2016);
-//		c1.set(Calendar.MONTH, 11);
-//		c1.set(Calendar.DATE, 29);
-//		LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
-//		System.out.println();
-//		System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
-		
 	}
 }
