@@ -20,6 +20,9 @@ public class LunarCalendar {
 	 */
 	public LunarCalendar(){
 		solar = new GregorianCalendar();
+		this.computeBySolarDate(solar.get(Calendar.YEAR), 
+				solar.get(Calendar.MONTH) + 1, 
+				solar.get(Calendar.DATE));
 	}
 	
 	/**
@@ -102,7 +105,7 @@ public class LunarCalendar {
 		this.month = lunarMonth;
 		this.date = lunarDate;
 		int solarMontDate = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][lunarMonth];
-		int leapMonth = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][0];
+		leapMonth = LunarConst.LuarInfo[lunarYear - LunarConst.MINIYEAR][0];
 		if (leapMonth !=0 && 
 				(lunarMonth > leapMonth || (lunarMonth == leapMonth && isleapMonth))) {
 			// 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
@@ -130,7 +133,7 @@ public class LunarCalendar {
 			return isSuccess;
 		}
 		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
-		int leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
+		leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
 		int solarCodes[] = builderSolarCodes(solarYear);
 		int newMonth = binSearch(solarCodes, solarCode);
 		if(-1 == newMonth){ //出错
