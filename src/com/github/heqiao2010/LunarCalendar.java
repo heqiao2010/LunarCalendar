@@ -76,7 +76,7 @@ public class LunarCalendar {
 	}
 	
 	/**
-	 * Adds the specified (signed) amount of time to the given calendar field
+	 * 日期增加
 	 * @param field
 	 * @param amount
 	 */
@@ -177,10 +177,13 @@ public class LunarCalendar {
 	}
 	
 	/**
-	 * 计算两个日期之差
+	 * 计算两个农历日期之差
+	 * @param lc1
+	 * @param lc2
+	 * @param field
 	 */
-	public static void dateDiff(){
-		
+	public static long luanrDiff(LunarCalendar lc1, LunarCalendar lc2, int field){
+		return solarDiff(lc1.getSolar(), lc2.getSolar(), field);
 	}
 	
 	/**
