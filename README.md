@@ -40,6 +40,33 @@
 * static long solarDiff(java.util.Calendar solar1, java.util.Calendar solar2, int field) 求两个公历日期之差，field可以为年月日，时分秒 一年按365天计算，一个月按30天计算  
 * java.lang.String toString()  
 
+## Test
+* Solar：1900-01-31 <====> Lunar：一九〇〇年正月初一 庚子年 鼠
+* Solar：1900-02-01 <====> Lunar：一九〇〇年正月初二 庚子年 鼠
+* Solar：1900-02-02 <====> Lunar：一九〇〇年正月初三 庚子年 鼠
+* Solar：1900-02-03 <====> Lunar：一九〇〇年正月初四 庚子年 鼠
+* Solar：1900-02-04 <====> Lunar：一九〇〇年正月初五 庚子年 鼠
+* Solar：1900-02-05 <====> Lunar：一九〇〇年正月初六 庚子年 鼠
+* Solar：1900-02-06 <====> Lunar：一九〇〇年正月初七 庚子年 鼠
+* Solar：1900-02-07 <====> Lunar：一九〇〇年正月初八 庚子年 鼠
+* Solar：1900-02-08 <====> Lunar：一九〇〇年正月初九 庚子年 鼠
+* Solar：1900-02-09 <====> Lunar：一九〇〇年正月初十 庚子年 鼠
+* Solar：1900-02-10 <====> Lunar：一九〇〇年正月十一 庚子年 鼠
+* Solar：1900-02-11 <====> Lunar：一九〇〇年正月十二 庚子年 鼠
+* Solar：1900-02-12 <====> Lunar：一九〇〇年正月十三 庚子年 鼠
+* Solar：1900-02-13 <====> Lunar：一九〇〇年正月十四 庚子年 鼠
+* Solar：1900-02-14 <====> Lunar：一九〇〇年正月十五 庚子年 鼠
+* Solar：1900-02-15 <====> Lunar：一九〇〇年正月十六 庚子年 鼠
+* Solar：1900-02-16 <====> Lunar：一九〇〇年正月十七 庚子年 鼠
+* Solar：1900-02-17 <====> Lunar：一九〇〇年正月十八 庚子年 鼠
+* Solar：1900-02-18 <====> Lunar：一九〇〇年正月十九 庚子年 鼠
+* Solar：1900-02-19 <====> Lunar：一九〇〇年正月二十 庚子年 鼠
+
+## Source Code
+
+ - [LunarCalendar](https://github.com/heqiao2010/LunarCalendar)
+
+
 ## Credits
 
   - [heqiao2010](https://github.com/heqiao2010)
