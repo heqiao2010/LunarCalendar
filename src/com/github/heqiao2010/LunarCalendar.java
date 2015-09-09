@@ -31,7 +31,7 @@ public class LunarCalendar {
 	 * 通过年、月、日构造LunarCalendar
 	 * @param year
 	 * @param month
-	 * @param day
+	 * @param date
 	 * @param isLunar 是否为农历日期
 	 * @param isleapMonth 在为农历日期的前提下，是否闰月
 	 */
@@ -95,7 +95,7 @@ public class LunarCalendar {
 	 * @param lunarMonth
 	 * @param lunarDate
 	 * @param isleapMonth
-	 * @return
+	 * @return boolean
 	 */
 	private boolean computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth){
 		boolean isSuccess = true;
@@ -126,7 +126,7 @@ public class LunarCalendar {
 	 * @param solarYear
 	 * @param solarMonth
 	 * @param solarDay
-	 * @return
+	 * @return boolean
 	 */
 	private boolean computeBySolarDate(int solarYear, int solarMonth, int solarDate){
 		boolean isSuccess = true;
@@ -226,7 +226,7 @@ public class LunarCalendar {
 	 * @param lunarMonth
 	 * @param LunarDate
 	 * @param isLeapMonth
-	 * @return
+	 * @return Calendar
 	 */
 	public static Calendar lunar2Solar(int lunarYear, int lunarMonth, int LunarDate, boolean isLeapMonth){
 		LunarCalendar ret = new LunarCalendar();
@@ -239,8 +239,7 @@ public class LunarCalendar {
 	
 	/**
 	 * 
-	 * @param c
-	 * @param filed
+	 * @param field
 	 * @param n
 	 */
 	public void solarAdd(int field, int n){
@@ -249,7 +248,7 @@ public class LunarCalendar {
 
 	/**
 	 * 获取天
-	 * @return
+	 * @return String
 	 */
 	public String getDayName(int lunarDay){
 		return LunarConst.LunarDayName[lunarDay-1];
@@ -258,7 +257,7 @@ public class LunarCalendar {
 	/**
 	 * 获取农历月份
 	 * @param lunarMonth
-	 * @return
+	 * @return String
 	 */
 	public String getMonthName(int lunarMonth){
 		return LunarConst.LunarMonthName[lunarMonth-1];
@@ -281,7 +280,7 @@ public class LunarCalendar {
 	 * 一年按365天计算，一个月按30天计算<br>
 	 * @param solarCode1
 	 * @param solarCode2
-	 * @return
+	 * @return long
 	 */
 	public static long solarDateCodesDiff(int solarCode1, int solarCode2, int field) {
 		GregorianCalendar c1 = new GregorianCalendar(solarCode1 / 10000, solarCode1 % 10000 / 100 - 1,
@@ -297,7 +296,7 @@ public class LunarCalendar {
 	 * @param solar1
 	 * @param solar2
 	 * @param field
-	 * @return
+	 * @return long
 	 */
 	public static long solarDiff(Calendar solar1, Calendar solar2, int field){
 		long t1 = solar1.getTimeInMillis();
@@ -373,7 +372,7 @@ public class LunarCalendar {
 	 * 一个简单的二分查找，返回查找到的元素坐标，用于查找农历二维数组信息
 	 * @param array
 	 * @param n
-	 * @return 
+	 * @return int
 	 */
 	public static int binSearch(int[] array, int n){
 		if (null == array || array.length == 0){
@@ -414,5 +413,31 @@ public class LunarCalendar {
 		return this.getYearName(this.year) + "年"
 				+ (this.isLeapMonth() ? "闰" : "") + this.getMonthName(this.month) + "月"
 				+ this.getDayName(this.date);
+	}
+	
+	/**
+	 * 返回传统天干地支年名称
+	 * @return String
+	 */
+	public static String getTraditionalYearName(int y) {
+		y = y - LunarConst.MINIYEAR + 36;
+		return ("" + LunarConst.LunarGan[y % 10] + LunarConst.LunarZhi[y % 12] + "年");
+	}
+	
+	/**
+	 * 获取生肖名
+	 * @return char
+	 */
+	public static char getAnimalYearName(int y){
+		return LunarConst.LunarAnimailName[(y - 4) % 12];
+	}
+	
+	/**
+	 * 返回中国农历的全名
+	 * @return String
+	 */
+	public String getFullLunarName() {
+		return this.toString() + " " + getTraditionalYearName(this.year) + " "
+				+ getAnimalYearName(this.year);
 	}
 }
