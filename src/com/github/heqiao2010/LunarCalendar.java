@@ -85,7 +85,7 @@ public class LunarCalendar {
 	public void add(int field, int amount){
 		this.getSolar().add(field, amount);
 		this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), 
-				this.getSolar().get(Calendar.MONTH), 
+				this.getSolar().get(Calendar.MONTH) + 1, 
 				this.getSolar().get(Calendar.DATE));
 	}
 	
