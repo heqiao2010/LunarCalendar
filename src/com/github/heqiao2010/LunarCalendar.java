@@ -2,7 +2,11 @@ package com.github.heqiao2010;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
+/**
+ * 
+ * @author joel
+ *
+ */
 public class LunarCalendar {
 	// 农历年，和公历是一样的
 	private int year;
@@ -142,7 +146,7 @@ public class LunarCalendar {
 		leapMonth = LunarConst.LuarInfo[solarYear - LunarConst.MINIYEAR][0];
 		int solarCodes[] = builderSolarCodes(solarYear);
 		int newMonth = binSearch(solarCodes, solarCode);
-		int xdate = new Long(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+		int xdate = Long.valueOf(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
 		if (-1 == newMonth) { // 出错
 			return !isSuccess;
 		} else if (0 == newMonth) {// 在上一年
@@ -160,9 +164,9 @@ public class LunarCalendar {
 			} else {// 此公历日期在上一年农历12月内
 				newMonth = 12;
 			}
-			xdate = new Long(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
+			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
 			if (xdate < 0) {
-				System.out.println("--------------solarCode----------:" + solarCode);
+				throw new LunarException("Wrong solarCode: " + solarCode);
 			}
 			this.date = 1 + xdate;
 			this.year = solarYear;
@@ -174,9 +178,9 @@ public class LunarCalendar {
 			int[] nextSolarCodes = LunarConst.LuarInfo[solarYear + 1 - LunarConst.MINIYEAR];
 			// 取下一年农历1月1号公历日期码
 			int nearSolarCode = solarYear * 10000 + nextSolarCodes[1]; // 下一年农历1月1号公历日期码
-			xdate = new Long(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
+			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
 			if (xdate < 0) {
-				System.out.println("--------------solarCode----------:" + solarCode);
+				throw new LunarException("Wrong solarCode: " + solarCode);
 			}
 			this.date = 1 + xdate;
 			this.year = solarYear + 1; // 农历年到了下一年
@@ -184,7 +188,7 @@ public class LunarCalendar {
 			this.isLeapMonth = false; // 农历1月不可能为闰月
 		} else {
 			if (xdate < 0) {
-				System.out.println("--------------solarCode----------:" + solarCode);
+				throw new LunarException("Wrong solarCode: " + solarCode);
 			}
 			this.date = 1 + xdate;
 			this.year = solarYear;

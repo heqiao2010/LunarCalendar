@@ -1,5 +1,10 @@
 package com.github.heqiao2010;
-
+/**
+ * 农历常量<br>
+ * 存储公历和农历日期的对应关系
+ * @author joel
+ *
+ */
 public class LunarConst {
 	public final static int MINIYEAR = 1900;
 	public final static int MAXYEAR = 2099;
