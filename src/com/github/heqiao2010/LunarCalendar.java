@@ -298,6 +298,7 @@ public class LunarCalendar implements Serializable{
 	 *            在为农历日期的前提下，是否闰月
 	 */
 	public LunarCalendar(int year, int month, int date, boolean isLunar, boolean isleapMonth) {
+		solar = new GregorianCalendar();
 		if (isLunar) {
 			this.computeByLunarDate(year, month, date, isleapMonth);
 			this.year = year;
