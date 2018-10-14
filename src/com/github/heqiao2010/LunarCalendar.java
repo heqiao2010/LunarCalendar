@@ -3,12 +3,13 @@ package com.github.heqiao2010;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 /**
  * 
  * @author joel
  *
  */
-public class LunarCalendar implements Serializable{
+public class LunarCalendar implements Serializable {
 	/**
 	 * serialVersionUID
 	 */
@@ -18,7 +19,7 @@ public class LunarCalendar implements Serializable{
 	 * 支持的最小年份
 	 */
 	public final static int MINIYEAR = 1900;
-	
+
 	/**
 	 * 支持的最大年份
 	 */
@@ -29,7 +30,8 @@ public class LunarCalendar implements Serializable{
 	 * <li>每个数组的第一个数表示该年闰月月份，为0表示不闰月</li>
 	 * <li>数组中其他数表示该月初一对应的公历日期</li>
 	 */
-	private final static int[][] LuarInfo = { { 8, 131, 301, 331, 429, 528, 627, 726, 825, 924, 1023, 1122, 1222, 1320 }, // 1900
+	private final static int[][] LuarInfo = {
+			{ 8, 131, 301, 331, 429, 528, 627, 726, 825, 924, 1023, 1122, 1222, 1320 }, // 1900
 			{ 0, 219, 320, 419, 518, 616, 716, 814, 913, 1012, 1111, 1211, 1310 }, // 1901
 			{ 0, 208, 310, 408, 508, 606, 705, 804, 902, 1002, 1031, 1130, 1230 }, // 1902
 			{ 5, 129, 227, 329, 427, 527, 625, 724, 823, 921, 1020, 1119, 1219, 1317 }, // 1903
@@ -262,9 +264,7 @@ public class LunarCalendar implements Serializable{
 			"十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九",
 			"三十"/* "卅一", "卅二", "卅三", "卅四", "卅五", "卅六", "卅七", "卅八", "卅九" */
 	};
-	
-	
-	
+
 	// 农历年，和公历是一样的
 	private int year;
 	// 农历月
@@ -349,13 +349,12 @@ public class LunarCalendar implements Serializable{
 	 */
 	public void add(int field, int amount) {
 		this.getSolar().add(field, amount);
-		this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), 
-				this.getSolar().get(Calendar.MONTH) + 1, 
+		this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH) + 1,
 				this.getSolar().get(Calendar.DATE));
 	}
 
 	/**
-	 * 通过给定的农历日期，公历日期
+	 * 通过给定的农历日期，计算公历日期
 	 * 
 	 * @param lunarYear
 	 * @param lunarMonth
@@ -363,11 +362,9 @@ public class LunarCalendar implements Serializable{
 	 * @param isleapMonth
 	 * @return boolean
 	 */
-	private boolean computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth) {
-		boolean isSuccess = true;
+	private void computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth) {
 		if (lunarYear < MINIYEAR && lunarYear > MAXYEAR) {
-			isSuccess = false;
-			return isSuccess;
+			throw new LunarException("LunarYear must in [" + MINIYEAR + "," + MAXYEAR + "]");
 		}
 		this.year = lunarYear;
 		this.month = lunarMonth;
@@ -380,10 +377,9 @@ public class LunarCalendar implements Serializable{
 			solarMontDate = LuarInfo[lunarYear - MINIYEAR][lunarMonth + 1];
 		}
 		this.getSolar().set(Calendar.YEAR, lunarYear);
-		this.getSolar().set(Calendar.MONTH, solarMontDate / 100);
+		this.getSolar().set(Calendar.MONTH, (solarMontDate / 100) - 1);
 		this.getSolar().set(Calendar.DATE, solarMontDate % 100);
-		this.add(Calendar.DATE, lunarDate);
-		return isSuccess;
+		this.add(Calendar.DATE, lunarDate - 1);
 	}
 
 	/**
@@ -498,11 +494,8 @@ public class LunarCalendar implements Serializable{
 	 */
 	public static Calendar lunar2Solar(int lunarYear, int lunarMonth, int LunarDate, boolean isLeapMonth) {
 		LunarCalendar ret = new LunarCalendar();
-		if (ret.computeByLunarDate(lunarYear, lunarMonth, LunarDate, isLeapMonth)) {
-			return ret.getSolar();
-		} else {
-			return null;
-		}
+		ret.computeByLunarDate(lunarYear, lunarMonth, LunarDate, isLeapMonth);
+		return ret.getSolar();
 	}
 
 	/**
@@ -685,7 +678,7 @@ public class LunarCalendar implements Serializable{
 		return this.getYearName(this.year) + "年" + (this.isLeapMonth() ? "闰" : "") + this.getMonthName(this.month) + "月"
 				+ this.getDayName(this.day);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -741,9 +734,10 @@ public class LunarCalendar implements Serializable{
 	public String getFullLunarName() {
 		return this.toString() + " " + getTraditionalYearName(this.year) + " " + getAnimalYearName(this.year);
 	}
-	
+
 	/**
 	 * 农历日期异常
+	 * 
 	 * @author joel
 	 *
 	 */
