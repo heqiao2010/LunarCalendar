@@ -289,13 +289,11 @@ public class LunarCalendar implements Serializable {
 	/**
 	 * 通过年、月、日构造LunarCalendar
 	 * 
-	 * @param year
-	 * @param month
-	 * @param date
-	 * @param isLunar
-	 *            是否为农历日期
-	 * @param isleapMonth
-	 *            在为农历日期的前提下，是否闰月
+	 * @param year 年
+	 * @param month 月（1到12，不是从0开始）
+	 * @param date 日
+	 * @param isLunar 是否为农历日期
+	 * @param isleapMonth 在为农历日期的前提下，是否闰月
 	 */
 	public LunarCalendar(int year, int month, int date, boolean isLunar, boolean isleapMonth) {
 		solar = new GregorianCalendar();
@@ -313,35 +311,6 @@ public class LunarCalendar implements Serializable {
 	}
 
 	/**
-	 * 创建LunarInfo中某一年的一列公历日历编码<br>
-	 * 公历日历编码：年份+月份+天，用于查询某个公历日期在某个LunarInfo列的哪一个区间<br>
-	 * 
-	 * @return int[]
-	 */
-	private int[] builderSolarCodes(int solarYear) {
-		if (solarYear < MINIYEAR && solarYear > MAXYEAR) {
-			return null;
-		}
-		int lunarIndex = solarYear - MINIYEAR;
-		int solarCodes[] = new int[LuarInfo[lunarIndex].length];
-		for (int i = 0; i < solarCodes.length; i++) {
-			if (0 == i) { // 第一个数表示闰月，不用更改
-				solarCodes[i] = LuarInfo[lunarIndex][i];
-			} else if (1 == i) {
-				if (LuarInfo[lunarIndex][1] > 999) {
-					// 这年农历一月一日对应的公历实际是上一年的
-					solarCodes[i] = (solarYear - 1) * 10000 + LuarInfo[lunarIndex][i];
-				} else {
-					solarCodes[i] = solarYear * 10000 + LuarInfo[lunarIndex][i];
-				}
-			} else {
-				solarCodes[i] = solarYear * 10000 + LuarInfo[lunarIndex][i];
-			}
-		}
-		return solarCodes;
-	}
-
-	/**
 	 * 日期增加
 	 * 
 	 * @param field
@@ -351,109 +320,6 @@ public class LunarCalendar implements Serializable {
 		this.getSolar().add(field, amount);
 		this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH) + 1,
 				this.getSolar().get(Calendar.DATE));
-	}
-
-	/**
-	 * 通过给定的农历日期，计算公历日期
-	 * 
-	 * @param lunarYear
-	 * @param lunarMonth
-	 * @param lunarDate
-	 * @param isleapMonth
-	 * @return boolean
-	 */
-	private void computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth) {
-		if (lunarYear < MINIYEAR && lunarYear > MAXYEAR) {
-			throw new LunarException("LunarYear must in [" + MINIYEAR + "," + MAXYEAR + "]");
-		}
-		this.year = lunarYear;
-		this.month = lunarMonth;
-		this.day = lunarDate;
-		int solarMontDate = LuarInfo[lunarYear - MINIYEAR][lunarMonth];
-		leapMonth = LuarInfo[lunarYear - MINIYEAR][0];
-		if (leapMonth != 0 && (lunarMonth > leapMonth || (lunarMonth == leapMonth && isleapMonth))) {
-			// 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
-			// 闰月，且当前农历月等于闰月月份，并且此农历月为闰月，取下一个月的LunarInfo码
-			solarMontDate = LuarInfo[lunarYear - MINIYEAR][lunarMonth + 1];
-		}
-		this.getSolar().set(Calendar.YEAR, lunarYear);
-		this.getSolar().set(Calendar.MONTH, (solarMontDate / 100) - 1);
-		this.getSolar().set(Calendar.DATE, solarMontDate % 100);
-		this.add(Calendar.DATE, lunarDate - 1);
-	}
-
-	/**
-	 * 通过给定公历日期，计算农历日期
-	 * 
-	 * @param solarYear
-	 * @param solarMonth
-	 * @param solarDay
-	 * @return boolean
-	 */
-	private boolean computeBySolarDate(int solarYear, int solarMonth, int solarDate) {
-		boolean isSuccess = true;
-		if (solarYear < MINIYEAR && solarYear > MAXYEAR) {
-			isSuccess = false;
-			return isSuccess;
-		}
-		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
-		leapMonth = LuarInfo[solarYear - MINIYEAR][0];
-		int solarCodes[] = builderSolarCodes(solarYear);
-		int newMonth = binSearch(solarCodes, solarCode);
-		int xdate = Long.valueOf(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
-		if (-1 == newMonth) { // 出错
-			return !isSuccess;
-		} else if (0 == newMonth) {// 在上一年
-			solarYear--;
-			int[] preSolarCodes = LuarInfo[solarYear - MINIYEAR];
-			// 取上年农历12月1号公历日期码
-			int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; // 上一年12月1号
-			// 下一年公历1月表示为了13月，这里做翻译，并计算出日期码
-			nearSolarCode = (nearSolarCode / 100 == 13 ? solarYear + 1 : solarYear) * 10000
-					+ (nearSolarCode / 100 == 13 ? nearSolarCode - 1200 : nearSolarCode);
-			if (nearSolarCode > solarCode) {// 此公历日期在上一年农历12月1号，之前，即在上年农历11月内
-				newMonth = 11;
-				// 取农历11月的公历码
-				nearSolarCode = solarYear * 10000 + preSolarCodes[preSolarCodes.length - 2];
-			} else {// 此公历日期在上一年农历12月内
-				newMonth = 12;
-			}
-			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
-			if (xdate < 0) {
-				throw new LunarException("Wrong solarCode: " + solarCode);
-			}
-			this.day = 1 + xdate;
-			this.year = solarYear;
-			this.month = newMonth;
-			this.isLeapMonth = false; // 农历12月不可能为闰月
-		} else if (solarCodes.length == newMonth + 1 && xdate >= 30) {// 在下一年(公历12月只有30天)
-			newMonth = 1; // 农历肯定是1月
-			// 取下一年的公历日期码
-			int[] nextSolarCodes = LuarInfo[solarYear + 1 - MINIYEAR];
-			// 取下一年农历1月1号公历日期码
-			int nearSolarCode = solarYear * 10000 + nextSolarCodes[1]; // 下一年农历1月1号公历日期码
-			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
-			if (xdate < 0) {
-				throw new LunarException("Wrong solarCode: " + solarCode);
-			}
-			this.day = 1 + xdate;
-			this.year = solarYear + 1; // 农历年到了下一年
-			this.month = newMonth;
-			this.isLeapMonth = false; // 农历1月不可能为闰月
-		} else {
-			if (xdate < 0) {
-				throw new LunarException("Wrong solarCode: " + solarCode);
-			}
-			this.day = 1 + xdate;
-			this.year = solarYear;
-			this.isLeapMonth = 0 != leapMonth && (leapMonth + 1 == newMonth);
-			if (0 != leapMonth && leapMonth < newMonth) {
-				this.month = newMonth - 1;
-			} else {
-				this.month = newMonth;
-			}
-		}
-		return isSuccess;
 	}
 
 	/**
@@ -583,7 +449,241 @@ public class LunarCalendar implements Serializable {
 			return -1;
 		}
 	}
+	
+	/**
+	 * 返回传统天干地支年名称
+	 * 
+	 * @return String
+	 */
+	public static String getTraditionalYearName(int y) {
+		y = y - MINIYEAR + 36;
+		return ("" + LunarGan[y % 10] + LunarZhi[y % 12] + "年");
+	}
 
+	/**
+	 * 获取生肖名
+	 * 
+	 * @return char
+	 */
+	public static char getAnimalYearName(int y) {
+		return LunarAnimailName[(y - 4) % 12];
+	}
+
+	/**
+	 * 返回中国农历的全名
+	 * 
+	 * @return String
+	 */
+	public String getFullLunarName() {
+		return this.toString() + " " + getTraditionalYearName(this.year) + " " + getAnimalYearName(this.year);
+	}
+
+	@Override
+	public String toString() {
+		if (this.year < 1900 || this.year > 2099 || this.month < 1 || this.month > 12 || this.day < 1
+				|| this.day > 30) {
+			return "Wrong lunar date: " + year + " " + month + " " + day;
+		}
+		return this.getYearName(this.year) + "年" + (this.isLeapMonth() ? "闰" : "") + this.getMonthName(this.month) + "月"
+				+ this.getDayName(this.day);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + day;
+		result = prime * result + month;
+		result = prime * result + year;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LunarCalendar other = (LunarCalendar) obj;
+		if (day != other.day)
+			return false;
+		if (month != other.month)
+			return false;
+		if (year != other.year)
+			return false;
+		return true;
+	}
+	
+	/**
+	 * 创建LunarInfo中某一年的一列公历日历编码<br>
+	 * 公历日历编码：年份+月份+天，用于查询某个公历日期在某个LunarInfo列的哪一个区间<br>
+	 * 
+	 * @return int[]
+	 */
+	private int[] builderSolarCodes(int solarYear) {
+		if (solarYear < MINIYEAR && solarYear > MAXYEAR) {
+			return null;
+		}
+		int lunarIndex = solarYear - MINIYEAR;
+		int solarCodes[] = new int[LuarInfo[lunarIndex].length];
+		for (int i = 0; i < solarCodes.length; i++) {
+			if (0 == i) { // 第一个数表示闰月，不用更改
+				solarCodes[i] = LuarInfo[lunarIndex][i];
+			} else if (1 == i) {
+				if (LuarInfo[lunarIndex][1] > 999) {
+					// 这年农历一月一日对应的公历实际是上一年的
+					solarCodes[i] = (solarYear - 1) * 10000 + LuarInfo[lunarIndex][i];
+				} else {
+					solarCodes[i] = solarYear * 10000 + LuarInfo[lunarIndex][i];
+				}
+			} else {
+				solarCodes[i] = solarYear * 10000 + LuarInfo[lunarIndex][i];
+			}
+		}
+		return solarCodes;
+	}
+	
+	/**
+	 * 通过给定的农历日期，计算公历日期
+	 * 
+	 * @param lunarYear
+	 * @param lunarMonth
+	 * @param lunarDate
+	 * @param isleapMonth
+	 * @return boolean
+	 */
+	private void computeByLunarDate(int lunarYear, int lunarMonth, int lunarDate, boolean isleapMonth) {
+		if (lunarYear < MINIYEAR && lunarYear > MAXYEAR) {
+			throw new LunarException("LunarYear must in [" + MINIYEAR + "," + MAXYEAR + "]");
+		}
+		this.year = lunarYear;
+		this.month = lunarMonth;
+		this.day = lunarDate;
+		int solarMontDate = LuarInfo[lunarYear - MINIYEAR][lunarMonth];
+		leapMonth = LuarInfo[lunarYear - MINIYEAR][0];
+		if (leapMonth != 0 && (lunarMonth > leapMonth || (lunarMonth == leapMonth && isleapMonth))) {
+			// 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
+			// 闰月，且当前农历月等于闰月月份，并且此农历月为闰月，取下一个月的LunarInfo码
+			solarMontDate = LuarInfo[lunarYear - MINIYEAR][lunarMonth + 1];
+		}
+		this.getSolar().set(Calendar.YEAR, lunarYear);
+		this.getSolar().set(Calendar.MONTH, (solarMontDate / 100) - 1);
+		this.getSolar().set(Calendar.DATE, solarMontDate % 100);
+		this.add(Calendar.DATE, lunarDate - 1);
+	}
+
+	/**
+	 * 通过给定公历日期，计算农历日期
+	 * 
+	 * @param solarYear
+	 * @param solarMonth
+	 * @param solarDay
+	 * @return boolean
+	 */
+	private boolean computeBySolarDate(int solarYear, int solarMonth, int solarDate) {
+		boolean isSuccess = true;
+		if (solarYear < MINIYEAR && solarYear > MAXYEAR) {
+			isSuccess = false;
+			return isSuccess;
+		}
+		int solarCode = solarYear * 10000 + 100 * solarMonth + solarDate; // 公历码
+		leapMonth = LuarInfo[solarYear - MINIYEAR][0];
+		int solarCodes[] = builderSolarCodes(solarYear);
+		int newMonth = binSearch(solarCodes, solarCode);
+		int xdate = Long.valueOf(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
+		if (-1 == newMonth) { // 出错
+			return !isSuccess;
+		} else if (0 == newMonth) {// 在上一年
+			solarYear--;
+			int[] preSolarCodes = LuarInfo[solarYear - MINIYEAR];
+			// 取上年农历12月1号公历日期码
+			int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; // 上一年12月1号
+			// 下一年公历1月表示为了13月，这里做翻译，并计算出日期码
+			nearSolarCode = (nearSolarCode / 100 == 13 ? solarYear + 1 : solarYear) * 10000
+					+ (nearSolarCode / 100 == 13 ? nearSolarCode - 1200 : nearSolarCode);
+			if (nearSolarCode > solarCode) {// 此公历日期在上一年农历12月1号，之前，即在上年农历11月内
+				newMonth = 11;
+				// 取农历11月的公历码
+				nearSolarCode = solarYear * 10000 + preSolarCodes[preSolarCodes.length - 2];
+			} else {// 此公历日期在上一年农历12月内
+				newMonth = 12;
+			}
+			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
+			if (xdate < 0) {
+				throw new LunarException("Wrong solarCode: " + solarCode);
+			}
+			this.day = 1 + xdate;
+			this.year = solarYear;
+			this.month = newMonth;
+			this.isLeapMonth = false; // 农历12月不可能为闰月
+		} else if (solarCodes.length == newMonth + 1 && xdate >= 30) {// 在下一年(公历12月只有30天)
+			newMonth = 1; // 农历肯定是1月
+			// 取下一年的公历日期码
+			int[] nextSolarCodes = LuarInfo[solarYear + 1 - MINIYEAR];
+			// 取下一年农历1月1号公历日期码
+			int nearSolarCode = solarYear * 10000 + nextSolarCodes[1]; // 下一年农历1月1号公历日期码
+			xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
+			if (xdate < 0) {
+				throw new LunarException("Wrong solarCode: " + solarCode);
+			}
+			this.day = 1 + xdate;
+			this.year = solarYear + 1; // 农历年到了下一年
+			this.month = newMonth;
+			this.isLeapMonth = false; // 农历1月不可能为闰月
+		} else {
+			if (xdate < 0) {
+				throw new LunarException("Wrong solarCode: " + solarCode);
+			}
+			this.day = 1 + xdate;
+			this.year = solarYear;
+			this.isLeapMonth = 0 != leapMonth && (leapMonth + 1 == newMonth);
+			if (0 != leapMonth && leapMonth < newMonth) {
+				this.month = newMonth - 1;
+			} else {
+				this.month = newMonth;
+			}
+		}
+		return isSuccess;
+	}
+	
+	/**
+	 * 一个简单的二分查找，返回查找到的元素坐标，用于查找农历二维数组信息
+	 * 
+	 * @param array
+	 * @param n
+	 * @return int
+	 */
+	private static int binSearch(int[] array, int n) {
+		if (null == array || array.length == 0) {
+			return -1;
+		}
+		int min = 0, max = array.length - 1;
+		if (n <= array[min]) {
+			return min;
+		} else if (n >= array[max]) {
+			return max;
+		}
+		while (max - min > 1) {
+			int newIndex = (max + min) / 2; // 二分
+			if (array[newIndex] > n) { // 取小区间
+				max = newIndex;
+			} else if (array[newIndex] < n) {// 取大区间
+				min = newIndex;
+			} else { // 相等，直接返回下标
+				return newIndex;
+			}
+		}
+		if (array[max] == n) {
+			return max;
+		} else if (array[min] == n) {
+			return min;
+		} else {
+			return min; // 返回 较小的一个
+		}
+	}
+	
 	// getter and setter
 	public int getYear() {
 		return year;
@@ -631,108 +731,6 @@ public class LunarCalendar implements Serializable {
 
 	public void setLeapMonth(boolean isLeapMonth) {
 		this.isLeapMonth = isLeapMonth;
-	}
-
-	/**
-	 * 一个简单的二分查找，返回查找到的元素坐标，用于查找农历二维数组信息
-	 * 
-	 * @param array
-	 * @param n
-	 * @return int
-	 */
-	public static int binSearch(int[] array, int n) {
-		if (null == array || array.length == 0) {
-			return -1;
-		}
-		int min = 0, max = array.length - 1;
-		if (n <= array[min]) {
-			return min;
-		} else if (n >= array[max]) {
-			return max;
-		}
-		while (max - min > 1) {
-			int newIndex = (max + min) / 2; // 二分
-			if (array[newIndex] > n) { // 取小区间
-				max = newIndex;
-			} else if (array[newIndex] < n) {// 取大区间
-				min = newIndex;
-			} else { // 相等，直接返回下标
-				return newIndex;
-			}
-		}
-		if (array[max] == n) {
-			return max;
-		} else if (array[min] == n) {
-			return min;
-		} else {
-			return min; // 返回 较小的一个
-		}
-	}
-
-	@Override
-	public String toString() {
-		if (this.year < 1900 || this.year > 2099 || this.month < 1 || this.month > 12 || this.day < 1
-				|| this.day > 30) {
-			return "Wrong lunar date: " + year + " " + month + " " + day;
-		}
-		return this.getYearName(this.year) + "年" + (this.isLeapMonth() ? "闰" : "") + this.getMonthName(this.month) + "月"
-				+ this.getDayName(this.day);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + day;
-		result = prime * result + month;
-		result = prime * result + year;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		LunarCalendar other = (LunarCalendar) obj;
-		if (day != other.day)
-			return false;
-		if (month != other.month)
-			return false;
-		if (year != other.year)
-			return false;
-		return true;
-	}
-
-	/**
-	 * 返回传统天干地支年名称
-	 * 
-	 * @return String
-	 */
-	public static String getTraditionalYearName(int y) {
-		y = y - MINIYEAR + 36;
-		return ("" + LunarGan[y % 10] + LunarZhi[y % 12] + "年");
-	}
-
-	/**
-	 * 获取生肖名
-	 * 
-	 * @return char
-	 */
-	public static char getAnimalYearName(int y) {
-		return LunarAnimailName[(y - 4) % 12];
-	}
-
-	/**
-	 * 返回中国农历的全名
-	 * 
-	 * @return String
-	 */
-	public String getFullLunarName() {
-		return this.toString() + " " + getTraditionalYearName(this.year) + " " + getAnimalYearName(this.year);
 	}
 
 	/**

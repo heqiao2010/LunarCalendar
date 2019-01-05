@@ -34,8 +34,8 @@ public class Test {
 		System.out.println(df.format(c1.getTime()));
 		c1.add(Calendar.MONTH, 10);
 		System.out.println(df.format(c1.getTime()));
-		int[] arr1900 = { 8, 131, 301, 331, 429, 528, 627, 726, 825, 924, 1023, 1122, 1222, 1320 };
-		System.out.println(LunarCalendar.binSearch(arr1900, 1121));
+		// int[] arr1900 = { 8, 131, 301, 331, 429, 528, 627, 726, 825, 924, 1023, 1122, 1222, 1320 };
+		// System.out.println(LunarCalendar.binSearch(arr1900, 1121));
 		
 		c1.set(Calendar.YEAR, 1991);
 		c1.set(Calendar.MONTH, 3);
