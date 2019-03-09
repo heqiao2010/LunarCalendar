@@ -28,12 +28,12 @@
 * boolean isLeapMonth()                                                                                          
 * static long luanrDiff(LunarCalendar lc1, LunarCalendar lc2, int field) 计算两个农历日期之差                          
 * static java.util.Calendar lunar2Solar(int lunarYear, int lunarMonth, int LunarDate, boolean isLeapMonth) 农历转公历                                             
-* void setDate(int date)                                                                                       
+* void setDate(int ldate)
 * void setLeapMonth(boolean isLeapMonth)                                                                 
 * void setLeapMonth(int leapMonth)                                                                               
-* void setMonth(int month)                                                                                       
+* void setMonth(int lmonth)
 * void setSolar(java.util.GregorianCalendar solar)                                                            
-* void setYear(int year)                                                                                    
+* void setYear(int lyear)
 * static LunarCalendar solar2Lunar(java.util.Calendar solar) 公历转农历                                             
 * void solarAdd(int field, int n)                                                                               
 * static long solarDateCodesDiff(int solarCode1, int solarCode2, int field) 判断两个整数所代表公历日期的差值 一年按365天计算，一个月按30天计算  
