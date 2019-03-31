@@ -59,10 +59,16 @@ public class LocalTest {
     @Test
     public void localTest2(){
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        Calendar c1 = Calendar.getInstance();
-        c1.set(Calendar.YEAR, 1900);
-        c1.set(Calendar.MONTH, 0);
-        c1.set(Calendar.DATE, 30);
+        // 1900-1-31
+        Calendar start = Calendar.getInstance();
+        start.set(Calendar.YEAR, 1900);
+        start.set(Calendar.MONTH, 0);
+        start.set(Calendar.DATE, 31);
+        // 2099-12-31
+        Calendar end = Calendar.getInstance();
+        end.set(Calendar.YEAR, 2099);
+        end.set(Calendar.MONTH, 11);
+        end.set(Calendar.DATE, 31);
         FileOutputStream out = null;
         PrintStream p = null;
         try {
@@ -72,10 +78,12 @@ public class LocalTest {
             }
             out = new FileOutputStream(testFile);
             p = new PrintStream(out);
-            for(int i=0; i<73019; i++){
-                c1.add(Calendar.DATE, 1);
-                LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
-                p.println("Solar：" + df.format(c1.getTime()) + " <====> Lunar：" + luanr.getFullLunarName());
+            Calendar t = start;
+            while(t.before(end)) {
+                LunarCalendar lunar = LunarCalendar.solar2Lunar(t);
+                System.out.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
+                p.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
+                t.add(Calendar.DATE, 1);
             }
         } catch (FileNotFoundException e) {
             System.out.println("未找到solar2lunar.txt文件，或者文件创建失败.");
