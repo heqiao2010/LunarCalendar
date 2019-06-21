@@ -26,7 +26,8 @@ public class JuheTest {
 
     private Gson gson = new Gson();
 
-    private final Integer MAX_COUNT = 100;
+    // 聚合api不靠谱，后面再找合适的吧
+    private final Integer MAX_COUNT = 0;
 
     @Test
     public void testByJuhe() {
