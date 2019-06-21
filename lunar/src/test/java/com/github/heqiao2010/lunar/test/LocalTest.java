@@ -54,19 +54,19 @@ public class LocalTest {
     }
 
     /**
-     * 打印1900-01-31到2099-12-31所有的农历
+     * 打印MINI_YEAR-01-31到MAX_YEAR-12-31所有的农历,并输出到txt中
      */
     @Test
     public void localTest2(){
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        // 1900-1-31
+        // start
         Calendar start = Calendar.getInstance();
-        start.set(Calendar.YEAR, 1900);
+        start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
         start.set(Calendar.MONTH, 0);
         start.set(Calendar.DATE, 31);
-        // 2099-12-31
+        // end
         Calendar end = Calendar.getInstance();
-        end.set(Calendar.YEAR, 2099);
+        end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
         end.set(Calendar.MONTH, 11);
         end.set(Calendar.DATE, 31);
         FileOutputStream out = null;
@@ -79,7 +79,7 @@ public class LocalTest {
             out = new FileOutputStream(testFile);
             p = new PrintStream(out);
             Calendar t = start;
-            while(t.before(end)) {
+            while(t.before(end) || t.equals(end)) {
                 LunarCalendar lunar = LunarCalendar.solar2Lunar(t);
                 System.out.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
                 p.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
