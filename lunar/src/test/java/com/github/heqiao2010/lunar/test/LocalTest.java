@@ -20,7 +20,7 @@ public class LocalTest {
         int lunarMonth = 12;
         int lunarYear = 1048;
         Assert.assertEquals("初九", LunarCalendar.getDayName(lunarDay));
-        Assert.assertEquals("十二", LunarCalendar.getMonthName(lunarMonth));
+        Assert.assertEquals('腊', LunarCalendar.getMonthName(lunarMonth));
         Assert.assertEquals("一〇四八", LunarCalendar.getYearName(lunarYear));
 
         Calendar c = Calendar.getInstance();
