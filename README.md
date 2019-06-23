@@ -18,10 +18,17 @@ compile("com.github.heqiao2010:lunar:1.0")
 ```
 
 示例：
+公历转农历：
 ```
 Calendar today = Calendar.getInstance();
 LunarCalendar lunar = LunarCalendar.solar2Lunar(today);
 System.out.println(today.getTime() + " <====> " + lunar.getFullLunarName());
+```
+农历转公历：
+```
+LunarCalendar lunar = new LunarCalendar();
+Calendar today = LunarCalendar.lunar2Solar(lunar.getLyear(), lunar.getLmonth(), lunar.getLdate(), lunar.isLeapMonth());
+System.out.println(lunar.getFullLunarName() + " <====> " + today.getTime());
 ```
 
 ## 实现思路
