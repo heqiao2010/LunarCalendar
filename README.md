@@ -1,30 +1,36 @@
 # 中国农历
 中国农历的Java实现，本着简洁的原则，用一个Java类不到1000行,不依赖任何第三方库实现。
 
-支持公历范围为：1900-01-31到2140-12-31范围内，农历日期和公历日期的转换。支持获取年份的生肖以及天干地支表示。
+支持公历范围为：1900-01-31到2150-12-31范围内，农历日期和公历日期的转换。支持获取年份的生肖以及天干地支表示。
 
 ## 用法
 直接下载源码或者导入依赖。maven:
+
 ```
 <dependency>
   <groupId>com.github.heqiao2010</groupId>
   <artifactId>lunar</artifactId>
-  <version>1.0</version>
+  <version>{latest-version}</version>
 </dependency>
 ```
+
 gradle:
+
 ```
-compile("com.github.heqiao2010:lunar:1.0")
+compile("com.github.heqiao2010:lunar:{latest-version}")
 ```
 
 示例：
 公历转农历：
+
 ```
 Calendar today = Calendar.getInstance();
 LunarCalendar lunar = LunarCalendar.solar2Lunar(today);
 System.out.println(today.getTime() + " <====> " + lunar.getFullLunarName());
 ```
+
 农历转公历：
+
 ```
 LunarCalendar lunar = new LunarCalendar();
 Calendar today = LunarCalendar.lunar2Solar(lunar.getLyear(), lunar.getLmonth(), lunar.getLdate(), lunar.isLeapMonth());

@@ -18,7 +18,7 @@ public final class LunarCalendar implements Serializable {
     /**
      * 支持的最大年份
      */
-    public final static int MAX_YEAR = 2140;
+    public final static int MAX_YEAR = 2150;
     /**
      * 10天干
      */
@@ -292,6 +292,16 @@ public final class LunarCalendar implements Serializable {
             {0, 210, 311, 410, 509, 608, 707, 806, 904, 1004, 1103, 1202, 1301}, //2138
             {7, 130, 301, 330, 429, 528, 626, 726, 824, 923, 1023, 1122, 1221, 1320}, //2139
             {0, 218, 319, 417, 517, 615, 714, 813, 911, 1011, 1110, 1209, 1308}, //2140
+            {0, 207, 308, 407, 506, 605, 704, 802, 901, 930, 1030, 1128, 1228}, //2141
+            {5, 127, 226, 327, 426, 525, 624, 723, 821, 919, 1019, 1117, 1217, 1316}, //2142
+            {0, 215, 316, 415, 515, 613, 713, 811, 909, 1008, 1107, 1206, 1305}, //2143
+            {0, 204, 304, 403, 503, 602, 701, 730, 829, 927, 1027, 1125, 1224}, //2144
+            {4, 123, 222, 323, 422, 522, 620, 720, 818, 917, 1016, 1115, 1214, 1313}, //2145
+            {0, 211, 312, 411, 511, 609, 709, 807, 906, 1006, 1104, 1204, 1302}, //2146
+            {0, 201, 302, 331, 430, 529, 628, 728, 826, 925, 1025, 1123, 1223}, //2147
+            {1, 121, 220, 320, 419, 518, 616, 716, 814, 913, 1013, 1111, 1211, 1310}, //2148
+            {0, 208, 310, 408, 508, 606, 705, 804, 902, 1002, 1031, 1130, 1230}, //2149
+            {6, 129, 227, 329, 427, 527, 625, 724, 822, 921, 1020, 1119, 1219, 1318}, //2150
     };
     /**
      * serialVersionUID
@@ -805,10 +815,6 @@ public final class LunarCalendar implements Serializable {
 
         public LunarException() {
             super();
-        }
-
-        public LunarException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-            super(message, cause, writableStackTrace, writableStackTrace);
         }
 
         public LunarException(String message, Throwable t) {
