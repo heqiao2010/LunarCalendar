@@ -14,7 +14,7 @@ public final class LunarCalendar implements Serializable {
     /**
      * 支持的最小年份
      */
-    public final static int MINI_YEAR = 1900;
+    public final static int MINI_YEAR = 1850;
     /**
      * 支持的最大年份
      */
@@ -22,27 +22,27 @@ public final class LunarCalendar implements Serializable {
     /**
      * 10天干
      */
-    protected static final char[] LunarGan = {'甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'};
+    private static final char[] LunarGan = {'甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'};
     /**
      * 12地支
      */
-    protected static final char[] LunarZhi = {'子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'};
+    private static final char[] LunarZhi = {'子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'};
     /**
      * 12生肖
      */
-    protected static final char[] LunarAnimailName = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'};
+    private static final char[] LunarAnimailName = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'};
     /**
      * 农历年份名
      */
-    protected static final char[] LunarYearName = {'〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'};
+    private static final char[] LunarYearName = {'〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'};
     /**
      * 农历月份名
      */
-    protected static final char[] LunarMonthName = {'正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'};
+    private static final char[] LunarMonthName = {'正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'};
     /**
      * 农历日期名
      */
-    protected static final String[] LunarDayName = {"初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一",
+    private static final String[] LunarDayName = {"初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一",
             "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "廿十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九",
             "卅十"};
     /**
@@ -50,7 +50,57 @@ public final class LunarCalendar implements Serializable {
      * 每个数组的第一个数表示该年闰月月份，为0表示不闰月<br>
      * 数组中其他数表示该月初一对应的公历日期<br>
      */
-    protected final static int[][] LUAR_INFO = {
+    private final static short[][] LUNAR_INFO = {
+            {0, 212, 314, 412, 512, 610, 709, 808, 906, 1005, 1104, 1204, 1302}, // 1850
+            {8, 201, 303, 403, 501, 531, 629, 728, 827, 925, 1024, 1123, 1222, 1321}, // 1851
+            {0, 220, 321, 331, 419, 519, 618, 717, 815, 914, 1013, 1112, 1211, 1309}, // 1852
+            {0, 208, 310, 408, 508, 607, 706, 805, 903, 1003, 1101, 1201, 1230}, // 1853
+            {7, 129, 227, 329, 427, 527, 625, 725, 824, 922, 1022, 1120, 1220, 1318}, // 1854
+            {0, 217, 318, 416, 516, 614, 714, 813, 911, 1011, 1110, 1209, 1308}, // 1855
+            {0, 206, 307, 405, 504, 603, 702, 801, 830, 929, 1029, 1128, 1227}, // 1856
+            {5, 126, 224, 326, 424, 523, 622, 721, 820, 918, 1018, 1116, 1216, 1315}, // 1857
+            {0, 214, 315, 414, 513, 611, 711, 809, 907, 1007, 1106, 1205, 1304}, // 1858
+            {0, 203, 305, 403, 503, 601, 630, 730, 828, 926, 1026, 1124, 1224}, // 1859
+            {3, 123, 222, 322, 421, 521, 619, 718, 817, 915, 1014, 1113, 1212, 1311}, // 1860
+            {0, 210, 311, 410, 510, 608, 708, 806, 905, 1004, 1103, 1202, 1231}, // 1861
+            {8, 130, 301, 330, 429, 528, 627, 727, 825, 924, 1023, 1122, 1221, 1319}, // 1862
+            {0, 218, 319, 418, 518, 616, 716, 814, 913, 1013, 1111, 1211, 1309}, // 1863
+            {0, 208, 308, 406, 506, 604, 704, 802, 901, 1001, 1030, 1129, 1229, 1327}, // 1864
+            {6, 127, 226, 327, 425, 525, 623, 723, 821, 920, 1020, 1118, 1218, 1317}, // 1865
+            {0, 215, 317, 415, 514, 613, 712, 810, 909, 1009, 1107, 1207, 1306}, // 1866
+            {0, 205, 306, 405, 504, 602, 702, 731, 829, 928, 1027, 1126, 1226}, // 1867
+            {4, 125, 223, 324, 423, 522, 620, 720, 818, 916, 1016, 1114, 1214, 1313}, // 1868
+            {0, 211, 313, 412, 512, 610, 709, 808, 906, 1005, 1104, 1203, 1302}, // 1869
+            {10, 131, 302, 401, 501, 530, 629, 728, 827, 925, 1024, 1123, 1222, 1321}, // 1870
+            {0, 219, 321, 420, 519, 618, 718, 816, 915, 1014, 1113, 1212, 1310}, // 1871
+            {0, 209, 309, 408, 507, 606, 706, 804, 903, 1002, 1101, 1201, 1230}, // 1872
+            {6, 129, 227, 328, 427, 526, 625, 724, 823, 922, 1021, 1120, 1220, 1318}, // 1873
+            {0, 217, 318, 416, 516, 614, 714, 812, 911, 1010, 1109, 1209, 1308}, // 1874
+            {0, 206, 308, 406, 505, 604, 703, 801, 831, 929, 1029, 1128, 1228}, // 1875
+            {5, 126, 225, 326, 424, 523, 622, 721, 819, 918, 1017, 1116, 1216, 1314}, // 1876
+            {0, 213, 315, 414, 513, 611, 711, 809, 907, 1007, 1105, 1205, 1303}, // 1877
+            {0, 202, 304, 403, 502, 601, 630, 730, 828, 926, 1026, 1124, 1224}, // 1878
+            {3, 122, 221, 323, 421, 521, 620, 719, 818, 916, 1015, 1114, 1213, 1312}, // 1879
+            {0, 210, 311, 409, 509, 608, 707, 806, 905, 1004, 1103, 1202, 1231}, // 1880
+            {7, 130, 228, 330, 428, 528, 626, 726, 825, 923, 1023, 1122, 1221, 1320}, // 1881
+            {0, 218, 319, 418, 517, 616, 715, 814, 912, 1012, 1111, 1210, 1309}, // 1882
+            {0, 208, 309, 407, 507, 605, 704, 803, 901, 1001, 1031, 1130, 1229}, // 1883
+            {5, 128, 227, 327, 425, 525, 623, 722, 821, 919, 1019, 1118, 1217, 1316}, // 1884
+            {0, 215, 317, 415, 514, 613, 712, 810, 909, 1008, 1107, 1206, 1305}, // 1885
+            {0, 204, 306, 404, 504, 602, 702, 731, 829, 928, 1027, 1126, 1225}, // 1886
+            {4, 124, 223, 325, 423, 523, 621, 721, 819, 917, 1017, 1115, 1215, 1313}, // 1887
+            {0, 212, 313, 411, 511, 610, 709, 808, 906, 1005, 1104, 1203, 1302}, // 1888
+            {12, 131, 303, 331, 430, 530, 628, 728, 826, 925, 1024, 1123, 1222, 1321}, // 1889
+            {0, 219, 321, 419, 519, 617, 717, 816, 914, 1014, 1112, 1212, 1310}, // 1890
+            {0, 209, 310, 409, 508, 607, 706, 805, 903, 1003, 1102, 1201, 1231}, // 1891
+            {6, 130, 228, 328, 427, 526, 624, 724, 822, 921, 1021, 1119, 1219, 1318}, // 1892
+            {0, 217, 318, 416, 516, 614, 713, 812, 910, 1010, 1108, 1208, 1307}, // 1893
+            {0, 206, 307, 406, 505, 604, 703, 801, 831, 929, 1029, 1127, 1227}, // 1894
+            {5, 126, 225, 326, 425, 524, 623, 722, 820, 919, 1018, 1117, 1216, 1315}, // 1895
+            {0, 214, 314, 413, 513, 611, 711, 809, 907, 1007, 1105, 1205, 1303}, // 1896
+            {0, 202, 303, 402, 502, 531, 630, 730, 828, 926, 1026, 1124, 1224}, // 1897
+            {3, 122, 221, 322, 421, 520, 619, 719, 817, 916, 1015, 1114, 1213, 1312}, // 1898
+            {0, 210, 312, 410, 510, 608, 708, 806, 905, 1005, 1103, 1203, 1301}, // 1899
             {8, 131, 301, 331, 429, 528, 627, 726, 825, 924, 1023, 1122, 1222, 1320}, // 1900
             {0, 219, 320, 419, 518, 616, 716, 814, 913, 1012, 1111, 1211, 1310}, // 1901
             {0, 208, 310, 408, 508, 606, 705, 804, 902, 1002, 1031, 1130, 1230}, // 1902
@@ -317,7 +367,7 @@ public final class LunarCalendar implements Serializable {
     private boolean isLeapMonth = false;
     // 农历这年闰月，如果不闰月，默认为0
     private int leapMonth = 0;
-    // 公历日期
+    // 公历日期，公历月份范围：0-11
     private GregorianCalendar solar = new GregorianCalendar();
 
     /**
@@ -470,6 +520,73 @@ public final class LunarCalendar implements Serializable {
     }
 
     /**
+     * 返回传统天干地支年名称
+     *
+     * @param y 农历年
+     * @return 传统农历年份的表示
+     */
+    public static String getTraditionalYearName(int y) {
+        y = y - MINI_YEAR + 36;
+        return ("" + LunarGan[y % 10] + LunarZhi[y % 12] + "年");
+    }
+
+    /**
+     * 获取生肖名
+     *
+     * @param y 　农历年
+     * @return 生肖名
+     */
+    public static char getAnimalYearName(int y) {
+        return LunarAnimailName[(y - 4) % 12];
+    }
+
+    /**
+     * 日期增加,和<code>GregorianCalendar.add</code>类似
+     *
+     * @param field  　单位
+     * @param amount 数值
+     * @see GregorianCalendar
+     */
+    public void add(int field, int amount) {
+        this.getSolar().add(field, amount);
+        this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH),
+                this.getSolar().get(Calendar.DATE));
+    }
+
+    /**
+     * 增加公历日期
+     *
+     * @param field 　单位
+     * @param n     数值
+     * @see GregorianCalendar
+     */
+    public void solarAdd(int field, int n) {
+        getSolar().add(field, n);
+        computeBySolarDate(getSolar().get(Calendar.YEAR), getSolar().get(Calendar.MONTH), getSolar().get(Calendar.DATE));
+    }
+
+    /**
+     * 返回农历日期，不包含年份
+     *
+     * @param showLeap 　是否显示闰月的闰字
+     * @return 农历日期
+     */
+    public String getLunar(boolean showLeap) {
+        if (this.lmonth < 1 || this.lmonth > 12 || this.ldate < 1
+                || this.ldate > 30) {
+            throw new LunarException("Wrong lunar ldate: " + lmonth + " " + ldate);
+        }
+        if (showLeap) {
+            return (this.isLeapMonth() ? "闰" : "") + getMonthName(this.lmonth) + "月"
+                    + getDayName(this.ldate);
+        } else {
+            return getMonthName(this.lmonth) + "月" + getDayName(this.ldate);
+        }
+    }
+
+    //// ----------- private methods -------------
+
+    /**
      * 一个简单的二分查找，返回查找到的元素坐标，用于查找农历二维数组信息
      *
      * @param array 　数组
@@ -506,27 +623,6 @@ public final class LunarCalendar implements Serializable {
     }
 
     /**
-     * 返回传统天干地支年名称
-     *
-     * @param y 农历年
-     * @return 传统农历年份的表示
-     */
-    public static String getTraditionalYearName(int y) {
-        y = y - MINI_YEAR + 36;
-        return ("" + LunarGan[y % 10] + LunarZhi[y % 12] + "年");
-    }
-
-    /**
-     * 获取生肖名
-     *
-     * @param y 　农历年
-     * @return 生肖名
-     */
-    public static char getAnimalYearName(int y) {
-        return LunarAnimailName[(y - 4) % 12];
-    }
-
-    /**
      * 创建LunarInfo中某一年的一列公历日历编码<br>
      * 公历日历编码：年份+月份+天，用于查询某个公历日期在某个LunarInfo列的哪一个区间<br>
      *
@@ -538,35 +634,22 @@ public final class LunarCalendar implements Serializable {
             throw new LunarException("Illegal solar year: " + solarYear);
         }
         int lunarIndex = solarYear - MINI_YEAR;
-        int[] solarCodes = new int[LUAR_INFO[lunarIndex].length];
+        int[] solarCodes = new int[LUNAR_INFO[lunarIndex].length];
         for (int i = 0; i < solarCodes.length; i++) {
             if (0 == i) { // 第一个数表示闰月，不用更改
-                solarCodes[i] = LUAR_INFO[lunarIndex][i];
+                solarCodes[i] = LUNAR_INFO[lunarIndex][i];
             } else if (1 == i) {
-                if (LUAR_INFO[lunarIndex][1] > 999) {
+                if (LUNAR_INFO[lunarIndex][1] > 999) {
                     // 这年农历一月一日对应的公历实际是上一年的
-                    solarCodes[i] = (solarYear - 1) * 10000 + LUAR_INFO[lunarIndex][i];
+                    solarCodes[i] = (solarYear - 1) * 10000 + LUNAR_INFO[lunarIndex][i];
                 } else {
-                    solarCodes[i] = solarYear * 10000 + LUAR_INFO[lunarIndex][i];
+                    solarCodes[i] = solarYear * 10000 + LUNAR_INFO[lunarIndex][i];
                 }
             } else {
-                solarCodes[i] = solarYear * 10000 + LUAR_INFO[lunarIndex][i];
+                solarCodes[i] = solarYear * 10000 + LUNAR_INFO[lunarIndex][i];
             }
         }
         return solarCodes;
-    }
-
-    /**
-     * 日期增加,和<code>GregorianCalendar.add</code>类似
-     *
-     * @param field  　单位
-     * @param amount 数值
-     * @see GregorianCalendar
-     */
-    public void add(int field, int amount) {
-        this.getSolar().add(field, amount);
-        this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH),
-                this.getSolar().get(Calendar.DATE));
     }
 
     /**
@@ -584,12 +667,12 @@ public final class LunarCalendar implements Serializable {
         this.lyear = lunarYear;
         this.lmonth = lunarMonth;
         this.ldate = lunarDate;
-        int solarMontDate = LUAR_INFO[lunarYear - MINI_YEAR][lunarMonth];
-        leapMonth = LUAR_INFO[lunarYear - MINI_YEAR][0];
+        int solarMontDate = LUNAR_INFO[lunarYear - MINI_YEAR][lunarMonth];
+        leapMonth = LUNAR_INFO[lunarYear - MINI_YEAR][0];
         if (leapMonth != 0 && (lunarMonth > leapMonth || (lunarMonth == leapMonth && isleapMonth))) {
             // 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
             // 闰月，且当前农历月等于闰月月份，并且此农历月为闰月，取下一个月的LunarInfo码
-            solarMontDate = LUAR_INFO[lunarYear - MINI_YEAR][lunarMonth + 1];
+            solarMontDate = LUNAR_INFO[lunarYear - MINI_YEAR][lunarMonth + 1];
         }
         this.getSolar().set(Calendar.YEAR, lunarYear);
         this.getSolar().set(Calendar.MONTH, (solarMontDate / 100) - 1);
@@ -610,7 +693,7 @@ public final class LunarCalendar implements Serializable {
             throw new LunarException("Illegal solar year: " + solarYear);
         }
         int solarCode = solarYear * 10000 + 100 * (1 + solarMonth) + solarDate; // 公历码
-        leapMonth = LUAR_INFO[solarYear - MINI_YEAR][0];
+        leapMonth = LUNAR_INFO[solarYear - MINI_YEAR][0];
         int[] solarCodes = builderSolarCodes(solarYear);
         int newMonth = binSearch(solarCodes, solarCode);
         if (-1 == newMonth) {
@@ -619,7 +702,7 @@ public final class LunarCalendar implements Serializable {
         int xdate = Long.valueOf(solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
         if (0 == newMonth) {// 在上一年
             int preYear = solarYear - 1;
-            int[] preSolarCodes = LUAR_INFO[preYear - MINI_YEAR];
+            short[] preSolarCodes = LUNAR_INFO[preYear - MINI_YEAR];
             // 取上年农历12月1号公历日期码
             int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; // 上一年12月1号
             // 下一年公历1月表示为了13月，这里做翻译，并计算出日期码
@@ -643,7 +726,7 @@ public final class LunarCalendar implements Serializable {
         } else if (solarCodes.length == newMonth + 1 && xdate >= 30) {// 在下一年(公历12月只有30天)
             newMonth = 1; // 农历肯定是1月
             // 取下一年的公历日期码
-            int[] nextSolarCodes = LUAR_INFO[solarYear + 1 - MINI_YEAR];
+            short[] nextSolarCodes = LUNAR_INFO[solarYear + 1 - MINI_YEAR];
             // 取下一年农历1月1号公历日期码
             int nearSolarCode = solarYear * 10000 + nextSolarCodes[1]; // 下一年农历1月1号公历日期码
             xdate = Long.valueOf(solarDateCodesDiff(solarCode, nearSolarCode, Calendar.DATE)).intValue();
@@ -672,36 +755,6 @@ public final class LunarCalendar implements Serializable {
         this.getSolar().set(Calendar.DATE, solarDate);
     }
 
-    /**
-     * 增加公历日期
-     *
-     * @param field 　单位
-     * @param n     数值
-     * @see GregorianCalendar
-     */
-    public void solarAdd(int field, int n) {
-        getSolar().add(field, n);
-        computeBySolarDate(getSolar().get(Calendar.YEAR), getSolar().get(Calendar.MONTH), getSolar().get(Calendar.DATE));
-    }
-
-    /**
-     * 返回农历日期，不包含年份
-     *
-     * @param showLeap 　是否显示闰月的闰字
-     * @return 农历日期
-     */
-    public String getLunar(boolean showLeap) {
-        if (this.lmonth < 1 || this.lmonth > 12 || this.ldate < 1
-                || this.ldate > 30) {
-            throw new LunarException("Wrong lunar ldate: " + lmonth + " " + ldate);
-        }
-        if (showLeap) {
-            return (this.isLeapMonth() ? "闰" : "") + getMonthName(this.lmonth) + "月"
-                    + getDayName(this.ldate);
-        } else {
-            return getMonthName(this.lmonth) + "月" + getDayName(this.ldate);
-        }
-    }
 
     // getter and setter
     public int getLyear() {

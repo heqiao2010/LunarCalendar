@@ -62,8 +62,8 @@ public class LocalTest {
         // start
         Calendar start = Calendar.getInstance();
         start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
-        start.set(Calendar.MONTH, 0);
-        start.set(Calendar.DATE, 31);
+        start.set(Calendar.MONTH, 1);
+        start.set(Calendar.DATE, 12);
         // end
         Calendar end = Calendar.getInstance();
         end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
