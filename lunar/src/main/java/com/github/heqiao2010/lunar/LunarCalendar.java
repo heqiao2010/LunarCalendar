@@ -584,6 +584,47 @@ public final class LunarCalendar implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        if (this.lyear < MINI_YEAR || this.lyear > MAX_YEAR || this.lmonth < 1 || this.lmonth > 12 || this.ldate < 1
+                || this.ldate > 30) {
+            return "Wrong lunar date: " + lyear + " " + lmonth + " " + ldate;
+        }
+        return getYearName(this.lyear) + "年" + (this.isLeapMonth() ? "闰" : "") + getMonthName(this.lmonth) + "月"
+                + getDayName(this.ldate);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LunarCalendar that = (LunarCalendar) o;
+
+        if (lyear != that.lyear) return false;
+        if (lmonth != that.lmonth) return false;
+        if (ldate != that.ldate) return false;
+        return isLeapMonth == that.isLeapMonth;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = lyear;
+        result = 31 * result + lmonth;
+        result = 31 * result + ldate;
+        result = 31 * result + (isLeapMonth ? 1 : 0);
+        return result;
+    }
+
+    /**
+     * 返回中国农历的全名
+     *
+     * @return String
+     */
+    public String getFullLunarName() {
+        return this.toString() + " " + getTraditionalYearName(this.lyear) + " " + getAnimalYearName(this.lyear);
+    }
+
     //// ----------- private methods -------------
 
     /**
@@ -803,47 +844,6 @@ public final class LunarCalendar implements Serializable {
 
     public void setLeapMonth(boolean isLeapMonth) {
         this.isLeapMonth = isLeapMonth;
-    }
-
-    @Override
-    public String toString() {
-        if (this.lyear < MINI_YEAR || this.lyear > MAX_YEAR || this.lmonth < 1 || this.lmonth > 12 || this.ldate < 1
-                || this.ldate > 30) {
-            return "Wrong lunar date: " + lyear + " " + lmonth + " " + ldate;
-        }
-        return getYearName(this.lyear) + "年" + (this.isLeapMonth() ? "闰" : "") + getMonthName(this.lmonth) + "月"
-                + getDayName(this.ldate);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LunarCalendar that = (LunarCalendar) o;
-
-        if (lyear != that.lyear) return false;
-        if (lmonth != that.lmonth) return false;
-        if (ldate != that.ldate) return false;
-        return isLeapMonth == that.isLeapMonth;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = lyear;
-        result = 31 * result + lmonth;
-        result = 31 * result + ldate;
-        result = 31 * result + (isLeapMonth ? 1 : 0);
-        return result;
-    }
-
-    /**
-     * 返回中国农历的全名
-     *
-     * @return String
-     */
-    public String getFullLunarName() {
-        return this.toString() + " " + getTraditionalYearName(this.lyear) + " " + getAnimalYearName(this.lyear);
     }
 
     /**
