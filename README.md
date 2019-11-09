@@ -6,6 +6,8 @@
 ## 用法
 直接下载源码或者导入依赖。maven:
 
+latest-version=1.1-SNAPSHOT
+
 ```
 <dependency>
   <groupId>com.github.heqiao2010</groupId>
@@ -81,9 +83,5 @@ System.out.println(lunar.getFullLunarName() + " <====> " + today.getTime());
 
   - [heqiao2010](https://github.com/heqiao2010)
 
-## License
-
-[The MIT License](http://opensource.org/licenses/MIT)
-
-## 参考
+## 受conis用JS实现的lunar启发
 [conis用JS实现的lunar](http://github.com/conis/lunar)
