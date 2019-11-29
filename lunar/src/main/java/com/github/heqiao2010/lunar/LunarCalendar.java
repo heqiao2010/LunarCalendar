@@ -560,21 +560,9 @@ public final class LunarCalendar implements Serializable {
      * @see GregorianCalendar
      */
     public void add(int field, int amount) {
-        this.getSolar().add(field, amount);
-        this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH),
-                this.getSolar().get(Calendar.DATE));
-    }
-
-    /**
-     * 增加公历日期
-     *
-     * @param field 　单位
-     * @param n     数值
-     * @see GregorianCalendar
-     */
-    public void solarAdd(int field, int n) {
-        getSolar().add(field, n);
-        computeBySolarDate(getSolar().get(Calendar.YEAR), getSolar().get(Calendar.MONTH), getSolar().get(Calendar.DATE));
+        getSolar().add(field, amount);
+        computeBySolarDate(getSolar().get(Calendar.YEAR), getSolar().get(Calendar.MONTH),
+                getSolar().get(Calendar.DATE));
     }
 
     /**
