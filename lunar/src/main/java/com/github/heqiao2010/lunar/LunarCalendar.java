@@ -5,12 +5,14 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * 中国农历
- * Created by heqiao on 2019/3/31.
+ * Chinese Calendar
+ * Created by joel on 2019/3/31.
  *
  * @author joel
  */
 public final class LunarCalendar implements Serializable {
+    // ------------------------ 常量定义 --------------------------------
+
     /**
      * 支持的最小年份
      */
@@ -42,9 +44,9 @@ public final class LunarCalendar implements Serializable {
     /**
      * 农历日期名
      */
-    private static final String[] LunarDayName = {"初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一",
-            "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "廿十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九",
-            "卅十"};
+    private static final String[] LunarDayName = {"初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九",
+            "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "廿十", "廿一", "廿二", "廿三", "廿四",
+            "廿五", "廿六", "廿七", "廿八", "廿九", "卅十"};
     /**
      * 农历信息.<br>
      * 每个数组的第一个数表示该年闰月月份，为0表示不闰月<br>
@@ -353,10 +355,14 @@ public final class LunarCalendar implements Serializable {
             {0, 208, 310, 408, 508, 606, 705, 804, 902, 1002, 1031, 1130, 1230}, //2149
             {6, 129, 227, 329, 427, 527, 625, 724, 822, 921, 1020, 1119, 1219, 1318}, //2150
     };
+
     /**
      * serialVersionUID
      */
     private static final long serialVersionUID = 7241031233810655166L;
+
+    // ------------------------ 成员变量 --------------------------------
+
     // 农历年，和公历是一样的
     private int lyear;
     // 农历月，范围1-12
@@ -369,6 +375,8 @@ public final class LunarCalendar implements Serializable {
     private int leapMonth = 0;
     // 公历日期，公历月份范围：0-11
     private GregorianCalendar solar = new GregorianCalendar();
+
+    // ------------------------ 构造方法 --------------------------------
 
     /**
      * 默认构造
@@ -397,6 +405,8 @@ public final class LunarCalendar implements Serializable {
     public LunarCalendar(Calendar calendar) {
         computeBySolarDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
     }
+
+    // ------------------------ 静态方法 --------------------------------
 
     /**
      * 计算两个农历日期之差
@@ -540,6 +550,8 @@ public final class LunarCalendar implements Serializable {
         return LunarAnimailName[(y - 4) % 12];
     }
 
+    // ------------------------ 成员方法 --------------------------------
+
     /**
      * 日期增加,和<code>GregorianCalendar.add</code>类似
      *
@@ -624,8 +636,6 @@ public final class LunarCalendar implements Serializable {
     public String getFullLunarName() {
         return this.toString() + " " + getTraditionalYearName(this.lyear) + " " + getAnimalYearName(this.lyear);
     }
-
-    //// ----------- private methods -------------
 
     /**
      * 一个简单的二分查找，返回查找到的元素坐标，用于查找农历二维数组信息
@@ -796,8 +806,8 @@ public final class LunarCalendar implements Serializable {
         this.getSolar().set(Calendar.DATE, solarDate);
     }
 
+    // ------------------------ getter and sette --------------------------------
 
-    // getter and setter
     public int getLyear() {
         return lyear;
     }
@@ -890,4 +900,3 @@ public final class LunarCalendar implements Serializable {
 
     }
 }
-
