@@ -536,7 +536,8 @@ public final class LunarCalendar implements Serializable {
      * @return 传统农历年份的表示
      */
     public static String getTraditionalYearName(int y) {
-        y = y - MINI_YEAR + 36;
+        // 1804年是甲子年
+        y = y - 1804;
         return ("" + LunarGan[y % 10] + LunarZhi[y % 12] + "年");
     }
 
@@ -563,18 +564,6 @@ public final class LunarCalendar implements Serializable {
         this.getSolar().add(field, amount);
         this.computeBySolarDate(this.getSolar().get(Calendar.YEAR), this.getSolar().get(Calendar.MONTH),
                 this.getSolar().get(Calendar.DATE));
-    }
-
-    /**
-     * 增加公历日期
-     *
-     * @param field 　单位
-     * @param n     数值
-     * @see GregorianCalendar
-     */
-    public void solarAdd(int field, int n) {
-        getSolar().add(field, n);
-        computeBySolarDate(getSolar().get(Calendar.YEAR), getSolar().get(Calendar.MONTH), getSolar().get(Calendar.DATE));
     }
 
     /**
