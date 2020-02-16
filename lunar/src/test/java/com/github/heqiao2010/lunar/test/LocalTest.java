@@ -11,9 +11,57 @@ import java.util.Calendar;
  * Created by heqiao on 2019/3/31.
  */
 public class LocalTest {
-
+    /**
+     * 打印MINI_YEAR-01-31到MAX_YEAR-12-31所有的农历,并输出到txt中
+     */
     @Test
     public void localTest1(){
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        // start
+        Calendar start = Calendar.getInstance();
+        start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
+        start.set(Calendar.MONTH, 1);
+        start.set(Calendar.DATE, 12);
+        // end
+        Calendar end = Calendar.getInstance();
+        end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
+        end.set(Calendar.MONTH, 11);
+        end.set(Calendar.DATE, 31);
+        FileOutputStream out = null;
+        PrintStream p = null;
+        try {
+            File testFile = new File("./resources/solar2lunar.txt");
+            if(!testFile.exists()){
+                testFile.createNewFile();
+            }
+            out = new FileOutputStream(testFile);
+            p = new PrintStream(out);
+            Calendar t = start;
+            while(t.before(end) || t.equals(end)) {
+                LunarCalendar lunar = LunarCalendar.solar2Lunar(t);
+                System.out.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
+                p.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
+                t.add(Calendar.DATE, 1);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("未找到solar2lunar.txt文件，或者文件创建失败.");
+            e.printStackTrace();
+        } catch (IOException e){
+            System.out.println("未找到solar2lunar.txt文件，或者文件创建失败.");
+            e.printStackTrace();
+        }finally {
+            try {
+                out.close();
+                p.close();
+            } catch (IOException e) {
+                System.out.println("关闭流出错。");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void localTest2(){
         final java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
 
         int lunarDay = 9;
@@ -51,55 +99,6 @@ public class LocalTest {
         System.out.println(LunarCalendar.solarDiff(c1, c2, Calendar.DATE));
         System.out.println(df.format(c1.getTime()));
         System.out.println(df.format(c2.getTime()));
-    }
-
-    /**
-     * 打印MINI_YEAR-01-31到MAX_YEAR-12-31所有的农历,并输出到txt中
-     */
-    @Test
-    public void localTest2(){
-        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        // start
-        Calendar start = Calendar.getInstance();
-        start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
-        start.set(Calendar.MONTH, 1);
-        start.set(Calendar.DATE, 12);
-        // end
-        Calendar end = Calendar.getInstance();
-        end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
-        end.set(Calendar.MONTH, 11);
-        end.set(Calendar.DATE, 31);
-        FileOutputStream out = null;
-        PrintStream p = null;
-        try {
-            File testFile = new File("./solar2lunar.txt");
-            if(!testFile.exists()){
-                testFile.createNewFile();
-            }
-            out = new FileOutputStream(testFile);
-            p = new PrintStream(out);
-            Calendar t = start;
-            while(t.before(end) || t.equals(end)) {
-                LunarCalendar lunar = LunarCalendar.solar2Lunar(t);
-                System.out.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
-                p.println(df.format(t.getTime()) + " <====> " + lunar.getFullLunarName());
-                t.add(Calendar.DATE, 1);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("未找到solar2lunar.txt文件，或者文件创建失败.");
-            e.printStackTrace();
-        } catch (IOException e){
-            System.out.println("未找到solar2lunar.txt文件，或者文件创建失败.");
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                p.close();
-            } catch (IOException e) {
-                System.out.println("关闭流出错。");
-                e.printStackTrace();
-            }
-        }
     }
 
     @Test

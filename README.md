@@ -4,9 +4,11 @@
 支持公历范围为：1850-02-12到2150-12-31范围内，农历日期和公历日期的转换。支持获取年份的生肖以及天干地支表示。
 
 ## 用法
-直接下载源码或者导入依赖。maven:
+直接下载源码或者导入依赖。
 
 latest-version=1.2-SNAPSHOT
+
+maven:
 
 ```
 <dependency>
@@ -48,8 +50,12 @@ System.out.println(lunar.getFullLunarName() + " <====> " + today.getTime());
 * 每个数组的第一个数表示该年闰月月份，为0表示不闰月.
 * 数组中其他数表示该月初一对应的公历日期.
 
+## 关于数据的验证
+目前从公历范围：1901-01-01到2100-12-31 的数据是经过验证的，验证的依据是香港天文台提供的
+[公历农历对照表](https://www.hko.gov.hk/tc/gts/time/conversion1_text.htm)。
 
-## 测试结果
+
+## 公历农历对照表
 见solar2lunar.txt
 
 * Solar：1900-01-31 <====> Lunar：一九〇〇年正月初一 庚子年 鼠
