@@ -7,6 +7,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -14,7 +15,7 @@ import java.util.*;
  * see https://www.hko.gov.hk/tc/gts/time/conversion1_text.htm
  */
 public class DateInfoCollector {
-    private static final Map<String, Integer> MONTH_NUMBER_CONVERT_MAP = new HashMap<>();
+    private static final Map<String, Integer> MONTH_NUMBER_CONVERT_MAP = new HashMap<String, Integer>();
 
     static {
         MONTH_NUMBER_CONVERT_MAP.put("一月", 1);
@@ -36,31 +37,48 @@ public class DateInfoCollector {
         final int startYear = 1901;
         final int endYear = 2100;
 
-        Map<Integer, Integer> lunarLeapMonthMap = new LinkedHashMap<>();
-        List<Pair<String, String>> parsedDateList = new ArrayList<>();
+        Map<Integer, Integer> lunarLeapMonthMap = new LinkedHashMap<Integer, Integer>();
+        List<Pair<String, String>> parsedDateList = new ArrayList<Pair<String, String>>();
 
         for (int year = startYear; year <= endYear; year++){
             String uri = "http://www.hko.gov.hk/tc/gts/time/calendar/text/files/T" + year + "c.txt";
             HttpGet get = new HttpGet(uri);
-
-            try(CloseableHttpClient client = HttpClients.createDefault()) {
+            CloseableHttpClient client = null;
+            CloseableHttpResponse response = null;
+            try {
+                client = HttpClients.createDefault();
                 // 发送请求
-                CloseableHttpResponse response = client.execute(get);
+                response = client.execute(get);
                 String content = EntityUtils.toString(response.getEntity(), "Big5");
                 doCollect(parsedDateList, lunarLeapMonthMap, content, year);
             } catch (Exception e){
                 e.printStackTrace();
+            } finally {
+                try{
+                    if(null != client){
+                        client.close();
+                    }
+                    if(null != response){
+                        response.close();
+                    }
+                } catch (IOException iex) {
+                    //ignore
+                }
             }
         }
 
         System.out.println("lunar month map:");
-        parsedDateList.forEach(pair -> System.out.println(pair.getKey() + "->" + pair.getValue()));
+        for (Pair<String, String> pair : parsedDateList) {
+            System.out.println(pair.getKey() + "->" + pair.getValue());
+        }
 
         System.out.println("leap month info：");
-        lunarLeapMonthMap.forEach((key, value) -> System.out.println(key + "->" + value));
+        for (Map.Entry<Integer, Integer> entry : lunarLeapMonthMap.entrySet()) {
+            System.out.println(entry.getKey() + "->" + entry.getValue());
+        }
 
         System.out.println("lunar codes：");
-        parsedDateList.forEach(pair -> {
+        for (Pair<String, String> pair : parsedDateList){
             if (pair.getKey().endsWith("十二月")) {
                 if (pair.getValue().startsWith("01")){
                     System.out.print("13" + pair.getValue().substring(2));
@@ -74,13 +92,13 @@ public class DateInfoCollector {
                 System.out.print(removeStart0(pair.getValue()));
                 System.out.print(",");
             }
-        });
+        }
         System.out.println();
     }
 
     private void doCollect(List<Pair<String, String>> parsedDateList, Map<Integer, Integer> lunarLeapMonthMap,
                            String content, int year) {
-        Map<String, String> dateMap = new LinkedHashMap<>();
+        Map<String, String> dateMap = new LinkedHashMap<String, String>();
         String[] lines = content.split("\n");
 
         for (int i=3; i<lines.length; i++){
@@ -92,10 +110,13 @@ public class DateInfoCollector {
         }
 
         // 获取闰月信息
-        String lunarDateLeapMonth = dateMap.values().stream()
-                .filter(value -> value.startsWith("閏"))
-                .findFirst()
-                .orElse(null);
+        String lunarDateLeapMonth = null;
+        for (String lunarDateItem : dateMap.values()) {
+            if (lunarDateItem.startsWith("閏")){
+                lunarDateLeapMonth = lunarDateItem;
+                break;
+            }
+        }
         if (lunarDateLeapMonth != null) {
             Integer monthNumber = MONTH_NUMBER_CONVERT_MAP.get(lunarDateLeapMonth.substring(1));
             if (null != monthNumber) {
@@ -108,13 +129,13 @@ public class DateInfoCollector {
         }
 
         // 获取对照信息
-        dateMap.forEach((key, value) ->{
-            if (value.endsWith("月")) {
-                String lunarCode = key.substring(5, 7) + key.substring(8, 10);
-                Pair<String, String> pair = new Pair<>(year + value, lunarCode);
+        for (Map.Entry<String, String> entry : dateMap.entrySet()) {
+            if (entry.getValue().endsWith("月")) {
+                String lunarCode = entry.getKey().substring(5, 7) + entry.getKey().substring(8, 10);
+                Pair<String, String> pair = new Pair<String, String>(year + entry.getValue(), lunarCode);
                 parsedDateList.add(pair);
             }
-        });
+        }
     }
 
     private static String parseLunarDate(String line){

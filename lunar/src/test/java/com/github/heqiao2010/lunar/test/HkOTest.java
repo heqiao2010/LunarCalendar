@@ -8,6 +8,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 /**
@@ -23,10 +24,12 @@ public class HkOTest {
         for (int year=START; year<=END; year++){
             String uri = "http://www.hko.gov.hk/tc/gts/time/calendar/text/files/T" + year + "c.txt";
             HttpGet get = new HttpGet(uri);
-
-            try(CloseableHttpClient client = HttpClients.createDefault()) {
+            CloseableHttpClient client = null;
+            CloseableHttpResponse response = null;
+            try {
+                client = HttpClients.createDefault();
                 // 发送请求
-                CloseableHttpResponse response = client.execute(get);
+                response = client.execute(get);
                 String content = EntityUtils.toString(response.getEntity(), "Big5");
                 boolean pass = validateGanZhiAndAnimal(year, content) && validateLunarMonth(year, content);
                 if (pass) {
@@ -37,6 +40,17 @@ public class HkOTest {
                 }
             } catch (Exception e){
                 e.printStackTrace();
+            } finally {
+                try{
+                    if(null != client){
+                        client.close();
+                    }
+                    if(null != response){
+                        response.close();
+                    }
+                } catch (IOException iex) {
+                    //ignore
+                }
             }
         }
     }
