@@ -54,6 +54,9 @@ System.out.println(lunar.getFullLunarName() + " <====> " + today.getTime());
 目前从公历范围：1901-01-01到2100-12-31 的数据是经过验证的，验证的依据是香港天文台提供的
 [公历农历对照表](https://www.hko.gov.hk/tc/gts/time/conversion1_text.htm)。
 
+超出此范围的数据验证可以对比其他数据，比如手机APP日历或者第三方API等。
+
+@
 
 ## 公历农历对照表
 见solar2lunar.txt
