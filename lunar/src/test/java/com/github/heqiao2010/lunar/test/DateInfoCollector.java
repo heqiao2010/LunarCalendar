@@ -1,6 +1,5 @@
 package com.github.heqiao2010.lunar.test;
 
-import javafx.util.Pair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -161,5 +160,20 @@ public class DateInfoCollector {
 
     private static String removeStart0(String code){
         return code == null || code.charAt(0) != '0' ? code : code.substring(1);
+    }
+
+    private static class Pair<K,V> {
+        private K key;
+        private V value;
+        Pair(K key, V value){
+            this.key = key;
+            this.value = value;
+        }
+        K getKey(){
+            return key;
+        }
+        V getValue(){
+            return value;
+        }
     }
 }
