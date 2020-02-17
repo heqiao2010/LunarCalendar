@@ -6,7 +6,7 @@
 ## 用法
 直接下载源码或者导入依赖。
 
-latest-version=1.2-SNAPSHOT
+latest-version=1.2
 
 maven:
 
