@@ -35,7 +35,7 @@
 
     <groupId>com.github.heqiao2010</groupId>
         <artifactId>lunar</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 
     <name>LunarCalendar</name>
     <description>A Java implementation of Chinese lunar calendar. </description>
