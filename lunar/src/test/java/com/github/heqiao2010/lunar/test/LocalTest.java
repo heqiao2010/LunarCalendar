@@ -113,4 +113,19 @@ public class LocalTest {
         System.out.println();
         System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
     }
+
+    @Test
+    public void localTest4(){
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        Calendar c1 = Calendar.getInstance();
+
+        c1.set(Calendar.YEAR, 2020);
+        c1.set(Calendar.MONTH, 02);
+        c1.set(Calendar.DATE, 23);
+        LunarCalendar lunar = LunarCalendar.solar2Lunar(c1);
+        System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+        lunar.add(Calendar.DATE, 1);
+        System.out.println();
+        System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+    }
 }

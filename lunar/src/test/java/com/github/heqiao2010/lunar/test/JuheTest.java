@@ -97,8 +97,8 @@ public class JuheTest {
         System.out.println(date1 + " -> " + lunar.getFullLunarName());
         System.out.println("juheContent: " + juheContent);
         Assert.assertEquals(date1, date2);
-        Assert.assertEquals(data.getResult().getData().getAnimalsYear(), String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLyear())));
-        Assert.assertEquals(data.getResult().getData().getLunarYear(), LunarCalendar.getTraditionalYearName(lunar.getLyear()));
+        Assert.assertEquals(data.getResult().getData().getAnimalsYear(), String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLunarYear())));
+        Assert.assertEquals(data.getResult().getData().getLunarYear(), LunarCalendar.getTraditionalYearName(lunar.getLunarYear()));
         Assert.assertEquals(data.getResult().getData().getLunar(), lunar.getLunar(false));
     }
 
