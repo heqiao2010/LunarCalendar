@@ -69,31 +69,31 @@ public class HkOTest {
         String[] lines = content.split("\n");
 
         int startLine = year == 2058 ? 0 : 3;
-        for (int i=startLine; i<lines.length && lunar.getSolar().get(Calendar.YEAR)==year; i++) {
+        for (int i=startLine; i<lines.length && lunar.get(Calendar.YEAR)==year; i++) {
             String lunarMoth1;
             String fullLunarName = lunar.getFullLunarName();
             if (lunar.isLeapMonth()){
-                lunarMoth1 = "閏" + LunarCalendar.getMonthName(lunar.getLmonth()) + "月";
+                lunarMoth1 = "閏" + LunarCalendar.getMonthName(lunar.getLunarMonth()) + "月";
             } else {
-                lunarMoth1 = LunarCalendar.getMonthName(lunar.getLmonth()) + "月";
+                lunarMoth1 = LunarCalendar.getMonthName(lunar.getLunarMonth()) + "月";
             }
-            String lunarDate1 = LunarCalendar.getDayName(lunar.getLdate());
+            String lunarDate1 = LunarCalendar.getDayName(lunar.getDayOfLunarMonth());
             String lunarDate2 = parseLunarDate(lines[i]);
             if (lunarDate2.endsWith("月")) {
                 // 月份
                 if (isMonthEquals(lunarMoth1, lunarDate2)) {
-                    System.out.println(df.format(lunar.getSolar().getTime()) + " ==> " + fullLunarName + " passed!");
+                    System.out.println(df.format(lunar.getTime()) + " ==> " + fullLunarName + " passed!");
                 } else {
-                    System.out.println(df.format(lunar.getSolar().getTime()) + " not pass, line: " + lines[i]
+                    System.out.println(df.format(lunar.getTime()) + " not pass, line: " + lines[i]
                             + " date: " + lunarDate2 + " month: " + lunarMoth1);
                     return false;
                 }
             } else {
                 // 农历日期
                 if (lunarDate1.equals(lunarDate2)) {
-                    System.out.println(df.format(lunar.getSolar().getTime()) + " ==> " + fullLunarName + " passed!");
+                    System.out.println(df.format(lunar.getTime()) + " ==> " + fullLunarName + " passed!");
                 } else {
-                    System.out.println(df.format(lunar.getSolar().getTime()) + " not pass, line: " + lines[i]
+                    System.out.println(df.format(lunar.getTime()) + " not pass, line: " + lines[i]
                             + " date: " + lunarDate2);
                     return false;
                 }
@@ -122,9 +122,9 @@ public class HkOTest {
         String animalName = getAnimal(year, header);
         System.out.println(year + " -> " + lunarYear + " " + ganZhi + " " + animalName);
 
-        if (lunarYear.equals(String.valueOf(lunar.getLyear()))
-            && (ganZhi + "年").equals(LunarCalendar.getTraditionalYearName(lunar.getLyear()))
-            && isAnimalEquals(animalName, String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLyear())))) {
+        if (lunarYear.equals(String.valueOf(lunar.getLunarYear()))
+            && (ganZhi + "年").equals(LunarCalendar.getTraditionalYearName(lunar.getLunarYear()))
+            && isAnimalEquals(animalName, String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLunarYear())))) {
             return true;
         }
         System.out.println(lunar.getFullLunarName());
