@@ -20,13 +20,13 @@ public class LocalTest {
         // start
         Calendar start = Calendar.getInstance();
         start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
-        start.set(Calendar.MONTH, 1);
-        start.set(Calendar.DATE, 12);
+        start.set(Calendar.MONTH, LunarCalendar.MINI_MONTH);
+        start.set(Calendar.DATE, LunarCalendar.MINI_DATE);
         // end
         Calendar end = Calendar.getInstance();
         end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
-        end.set(Calendar.MONTH, 11);
-        end.set(Calendar.DATE, 31);
+        end.set(Calendar.MONTH, LunarCalendar.MAX_MONTH);
+        end.set(Calendar.DATE, LunarCalendar.MAX_DATE);
         FileOutputStream out = null;
         PrintStream p = null;
         try {
@@ -115,13 +115,16 @@ public class LocalTest {
         System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + lunar);
     }
 
+    /**
+     * 测试Set和Add
+     */
     @Test
     public void localTest4(){
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Calendar c1 = Calendar.getInstance();
 
         c1.set(Calendar.YEAR, 2020);
-        c1.set(Calendar.MONTH, 02);
+        c1.set(Calendar.MONTH, 2);
         c1.set(Calendar.DATE, 23);
         LunarCalendar lunar = LunarCalendar.solar2Lunar(c1);
         System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
@@ -133,5 +136,12 @@ public class LocalTest {
 
         lunar.add(Calendar.YEAR, 1);
         System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+        Assert.assertEquals("二〇二一年二月十二", lunar.toString());
+
+        lunar.set(Calendar.YEAR, 2019);
+        lunar.set(Calendar.MONTH, 2);
+        lunar.set(Calendar.DATE, 23);
+        System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+        Assert.assertEquals("二〇一九年二月十七", lunar.toString());
     }
 }
