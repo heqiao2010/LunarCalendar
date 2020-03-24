@@ -77,7 +77,8 @@ public class LocalTest {
         c.set(Calendar.DATE, 31);
         LunarCalendar lunar = new LunarCalendar(c);
         System.out.println(df.format(c.getTime()) + " -> " + lunar);
-        Assert.assertEquals("二〇一九年二月廿五", lunar.toString());
+        Assert.assertEquals("二〇一九年二月廿五", LunarCalendar.getYearName(lunar.getLunarYear())
+                + "年" + lunar.getLunar(false));
 
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
@@ -109,9 +110,9 @@ public class LocalTest {
         c1.set(Calendar.YEAR, 2046);
         c1.set(Calendar.MONTH, 01);
         c1.set(Calendar.DATE, 06);
-        LunarCalendar luanr = LunarCalendar.solar2Lunar(c1);
+        LunarCalendar lunar = LunarCalendar.solar2Lunar(c1);
         System.out.println();
-        System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + luanr);
+        System.out.println("Solar：" + df.format(c1.getTime()) + "Lunar：" + lunar);
     }
 
     @Test
@@ -124,8 +125,13 @@ public class LocalTest {
         c1.set(Calendar.DATE, 23);
         LunarCalendar lunar = LunarCalendar.solar2Lunar(c1);
         System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+        Assert.assertEquals("二〇二〇年二月三十", lunar.toString());
         lunar.add(Calendar.DATE, 1);
         System.out.println();
+        System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
+        Assert.assertEquals("二〇二〇年三月初一", lunar.toString());
+
+        lunar.add(Calendar.YEAR, 1);
         System.out.println("Solar：" + df.format(lunar.getTime()) + " Lunar：" + lunar);
     }
 }

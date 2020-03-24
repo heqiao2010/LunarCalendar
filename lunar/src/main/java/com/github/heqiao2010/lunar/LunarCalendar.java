@@ -828,7 +828,7 @@ public class LunarCalendar extends GregorianCalendar {
         return result;
     }
 
-    // ------------------------ getter and sette --------------------------------
+    // ------------------------ getter and setter --------------------------------
 
     public int getLunarYear() {
         return lunarYear;
