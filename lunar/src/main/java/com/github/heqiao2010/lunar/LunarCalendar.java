@@ -654,7 +654,7 @@ public class LunarCalendar extends GregorianCalendar {
     public Object clone() {
         LunarCalendar other = (LunarCalendar) super.clone();
         other.lunarYear = getLunarYear();
-        other.leapMonth = getLunarMonth();
+        other.lunarMonth = getLunarMonth();
         other.dayOfLunarMonth = getDayOfLunarMonth();
         other.leapMonth = getLeapMonth();
         other.isLeapMonth = isLeapMonth();
