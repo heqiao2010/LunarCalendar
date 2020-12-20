@@ -746,6 +746,10 @@ public class LunarCalendar extends GregorianCalendar {
         this.set(Calendar.MONTH, (solarMontDate / 100) - 1);
         this.set(Calendar.DATE, solarMontDate % 100);
         this.add(Calendar.DATE, lunarDate - 1);
+        // 农历月份有的是30天，有的是29天，这里对29天设了30的情况进行校验
+        if (get(Calendar.DAY_OF_MONTH) != lunarDate - 1) {
+            throw new IllegalArgumentException(String.format("LunarDayOfMonth %s out of range", lunarDate));
+        }
     }
 
     /**
