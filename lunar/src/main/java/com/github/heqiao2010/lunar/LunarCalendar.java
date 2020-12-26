@@ -735,21 +735,69 @@ public class LunarCalendar extends GregorianCalendar {
         this.lunarYear = lunarYear;
         this.lunarMonth = lunarMonth;
         this.dayOfLunarMonth = lunarDate;
-        int solarMontDate = LUNAR_INFO[lunarYear - MINI_YEAR][lunarMonth];
-        leapMonth = LUNAR_INFO[lunarYear - MINI_YEAR][0];
-        if (leapMonth != 0 && (lunarMonth > leapMonth || (lunarMonth == leapMonth && isLeapMonth))) {
-            // 闰月，且当前农历月大于闰月月份，取下一个月的LunarInfo码
-            // 闰月，且当前农历月等于闰月月份，并且此农历月为闰月，取下一个月的LunarInfo码
-            solarMontDate = LUNAR_INFO[lunarYear - MINI_YEAR][lunarMonth + 1];
+        short solarMontDate = lunarMonthCode(lunarYear, lunarMonth, isLeapMonth);
+        int solarYear = lunarYear + (solarMontDate / 100 > 12 ? 1 : 0);
+
+        // 对设置的day of month 进行检查
+        if (lunarDate == 30) {
+            long length = lengthOfMonth(lunarYear, lunarMonth, solarMontDate);
+            if (length != 30) {
+                throw new IllegalArgumentException(String.format("农历%d年%d月, 闰月=%s，月天数为%d < %d", solarYear, lunarMonth, isLeapMonth, length, lunarDate));
+            }
         }
-        this.set(Calendar.YEAR, lunarYear);
-        this.set(Calendar.MONTH, (solarMontDate / 100) - 1);
-        this.set(Calendar.DATE, solarMontDate % 100);
-        this.add(Calendar.DATE, lunarDate - 1);
-        // 农历月份有的是30天，有的是29天，这里对29天设了30的情况进行校验
-        if (get(Calendar.DAY_OF_MONTH) != lunarDate - 1) {
-            throw new IllegalArgumentException(String.format("LunarDayOfMonth %s out of range", lunarDate));
+
+        super.set(Calendar.YEAR, solarYear);
+        super.set(Calendar.MONTH, (solarMontDate / 100) - 1);
+        super.set(Calendar.DATE, solarMontDate % 100);
+        super.add(Calendar.DATE, lunarDate - 1);
+    }
+
+    private short lunarMonthCode(int lunarYear, int lunarMonth, boolean isLeapMonth) {
+        short[] startDates = LUNAR_INFO[lunarYear - MINI_YEAR];
+        int index = lunarMonth;
+        if (startDates[0] > 0 && startDates[0] < lunarMonth || startDates[0] == lunarMonth && isLeapMonth) {
+            index++;
         }
+        return LUNAR_INFO[lunarYear - MINI_YEAR][index];
+    }
+
+    /**
+     * 求一个农历月的天数
+     * @param lunarYear 农历年
+     * @param month 农历月
+     * @param code 农历月有日期，Mdd 表示
+     * @return 月的天数
+     */
+    private long lengthOfMonth(int lunarYear, int month, short code) {
+        short md2;
+        short[] starts = LUNAR_INFO[lunarYear - MINI_YEAR];
+        int y1 = lunarYear;
+        int y2 = lunarYear;
+        if (month + 1 < starts.length && starts[month] == code) {
+            md2 = starts[month + 1];
+        } else if (month + 2 < starts.length && starts[month + 1] == code) {
+            md2 = starts[month + 2];
+        } else if (lunarYear - MINI_YEAR + 1 < LUNAR_INFO.length) {
+            md2 = LUNAR_INFO[lunarYear + 1 - MINI_YEAR][1];
+            y2++;
+        } else {
+            throw new IllegalArgumentException("lunar date out of range");
+        }
+
+        if (code / 100 > 12) y1 ++;
+        int m1 = (code / 100) % 12;
+        int d1 = code % 100;
+
+        if (md2 / 100 > 12) y2 ++;
+        int m2 = (md2 / 100) % 12;
+        int d2 = md2 % 100;
+
+        Calendar c1 = Calendar.getInstance();
+        c1.set(y1, m1 - 1, d1);
+        Calendar c2 = Calendar.getInstance();
+        c2.set(y2, m2 - 1, d2);
+
+        return solarDiff(c1, c2, Calendar.DATE);
     }
 
     /**
