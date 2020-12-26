@@ -35,7 +35,7 @@ public class LocalTest {
                 testFile.createNewFile();
             }
             out = new FileOutputStream(testFile);
-            p = new PrintStream(out);
+            p = new PrintStream(out, true, "utf-8");
             Calendar t = start;
             while(t.before(end) || t.equals(end)) {
                 LunarCalendar lunar = LunarCalendar.solar2Lunar(t);
