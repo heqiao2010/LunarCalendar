@@ -7,7 +7,8 @@
 直接下载源码或者导入依赖。
 
 stable-version=1.2
-latest-version=1.3-SNAPSHOT
+
+latest-version=1.4
 
 maven:
 

@@ -671,7 +671,7 @@ public class LunarCalendar extends GregorianCalendar {
      *
      * @param year  农历年
      * @param index LUNAR_INFO 月份数组中的下标
-     * @return <月, 闰月>
+     * @return 月, 闰月
      */
     public static Map.Entry<Integer, Boolean> month(int year, int index) {
         short[] a = monthCodes(year);
