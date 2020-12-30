@@ -1,6 +1,7 @@
 package com.github.heqiao2010.lunar.test;
 
 import com.github.heqiao2010.lunar.LunarCalendar;
+import com.github.heqiao2010.lunar.LunarData;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,14 +20,14 @@ public class LocalTest {
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
         // start
         Calendar start = Calendar.getInstance();
-        start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
-        start.set(Calendar.MONTH, LunarCalendar.MINI_MONTH);
-        start.set(Calendar.DATE, LunarCalendar.MINI_DATE);
+        start.set(Calendar.YEAR, LunarData.MINI_YEAR);
+        start.set(Calendar.MONTH, LunarData.MINI_MONTH);
+        start.set(Calendar.DATE, LunarData.MINI_DATE);
         // end
         Calendar end = Calendar.getInstance();
-        end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
-        end.set(Calendar.MONTH, LunarCalendar.MAX_MONTH);
-        end.set(Calendar.DATE, LunarCalendar.MAX_DATE);
+        end.set(Calendar.YEAR, LunarData.MAX_YEAR);
+        end.set(Calendar.MONTH, LunarData.MAX_MONTH);
+        end.set(Calendar.DATE, LunarData.MAX_DATE);
         FileOutputStream out = null;
         PrintStream p = null;
         try {
