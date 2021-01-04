@@ -1,6 +1,7 @@
 package com.github.heqiao2010.lunar.test;
 
 import com.github.heqiao2010.lunar.LunarCalendar;
+import com.github.heqiao2010.lunar.LunarData;
 import com.google.gson.Gson;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -97,8 +98,8 @@ public class JuheTest {
         System.out.println(date1 + " -> " + lunar.getFullLunarName());
         System.out.println("juheContent: " + juheContent);
         Assert.assertEquals(date1, date2);
-        Assert.assertEquals(data.getResult().getData().getAnimalsYear(), String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLunarYear())));
-        Assert.assertEquals(data.getResult().getData().getLunarYear(), LunarCalendar.getTraditionalYearName(lunar.getLunarYear()));
+        Assert.assertEquals(data.getResult().getData().getAnimalsYear(), String.valueOf(LunarData.getAnimalYearName(lunar.getLunarYear())));
+        Assert.assertEquals(data.getResult().getData().getLunarYear(), LunarData.getTraditionalYearName(lunar.getLunarYear()));
         Assert.assertEquals(data.getResult().getData().getLunar(), lunar.getLunar(false));
     }
 

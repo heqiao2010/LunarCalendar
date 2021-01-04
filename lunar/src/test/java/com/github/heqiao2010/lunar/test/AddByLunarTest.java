@@ -1,6 +1,7 @@
 package com.github.heqiao2010.lunar.test;
 
 import com.github.heqiao2010.lunar.LunarCalendar;
+import com.github.heqiao2010.lunar.LunarCodes;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ public class AddByLunarTest {
      */
     @Test
     public void addByLunarMonth11() {
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2020)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2020)));
         final LunarCalendar lunar = new LunarCalendar(2020, 4, 20, false);
         Assert.assertEquals("二〇二〇年四月二十", lunar.toString());
         lunar.addByLunar(Calendar.MONTH, 1);
@@ -33,7 +34,7 @@ public class AddByLunarTest {
      */
     @Test
     public void addByLunarMonth12() {
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2020)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2020)));
         final LunarCalendar lunar = new LunarCalendar(2020, 4, 20, true);
         Assert.assertEquals("二〇二〇年闰四月二十", lunar.toString());
         lunar.addByLunar(Calendar.MONTH, -1);
@@ -86,9 +87,9 @@ public class AddByLunarTest {
     @Test
     public void addByLunarMonth7() {
         final LunarCalendar lunar = new LunarCalendar(2020, 6, 1, false);
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2020)));
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2019)));
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2018)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2020)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2019)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2018)));
 
         Assert.assertEquals("二〇二〇年六月初一", lunar.toString());
         lunar.addByLunar(Calendar.MONTH, -19);
@@ -98,9 +99,9 @@ public class AddByLunarTest {
     @Test
     public void addByLunarMonth8() {
         final LunarCalendar lunar = new LunarCalendar(2018, 12, 1, false);
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2018)));
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2019)));
-        System.out.println(Arrays.toString(LunarCalendar.monthCodes(2020)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2018)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2019)));
+        System.out.println(Arrays.toString(LunarCodes.monthCodes(2020)));
 
         Assert.assertEquals("二〇一八年腊月初一", lunar.toString());
         lunar.addByLunar(Calendar.MONTH, 19);

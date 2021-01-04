@@ -1,6 +1,8 @@
 package com.github.heqiao2010.lunar.test;
 
 import com.github.heqiao2010.lunar.LunarCalendar;
+import com.github.heqiao2010.lunar.LunarData;
+import com.github.heqiao2010.lunar.LunarUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,14 +21,14 @@ public class LocalTest {
         java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
         // start
         Calendar start = Calendar.getInstance();
-        start.set(Calendar.YEAR, LunarCalendar.MINI_YEAR);
-        start.set(Calendar.MONTH, LunarCalendar.MINI_MONTH);
-        start.set(Calendar.DATE, LunarCalendar.MINI_DATE);
+        start.set(Calendar.YEAR, LunarData.MINI_YEAR);
+        start.set(Calendar.MONTH, LunarData.MINI_MONTH);
+        start.set(Calendar.DATE, LunarData.MINI_DATE);
         // end
         Calendar end = Calendar.getInstance();
-        end.set(Calendar.YEAR, LunarCalendar.MAX_YEAR);
-        end.set(Calendar.MONTH, LunarCalendar.MAX_MONTH);
-        end.set(Calendar.DATE, LunarCalendar.MAX_DATE);
+        end.set(Calendar.YEAR, LunarData.MAX_YEAR);
+        end.set(Calendar.MONTH, LunarData.MAX_MONTH);
+        end.set(Calendar.DATE, LunarData.MAX_DATE);
         FileOutputStream out = null;
         PrintStream p = null;
         try {
@@ -67,9 +69,9 @@ public class LocalTest {
         int lunarDay = 9;
         int lunarMonth = 12;
         int lunarYear = 1048;
-        Assert.assertEquals("初九", LunarCalendar.getDayName(lunarDay));
-        Assert.assertEquals('腊', LunarCalendar.getMonthName(lunarMonth));
-        Assert.assertEquals("一〇四八", LunarCalendar.getYearName(lunarYear));
+        Assert.assertEquals("初九", LunarData.getDayName(lunarDay));
+        Assert.assertEquals('腊', LunarData.getMonthName(lunarMonth));
+        Assert.assertEquals("一〇四八", LunarData.getYearName(lunarYear));
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, 2019);
@@ -77,7 +79,7 @@ public class LocalTest {
         c.set(Calendar.DATE, 31);
         LunarCalendar lunar = new LunarCalendar(c);
         System.out.println(df.format(c.getTime()) + " -> " + lunar);
-        Assert.assertEquals("二〇一九年二月廿五", LunarCalendar.getYearName(lunar.getLunarYear())
+        Assert.assertEquals("二〇一九年二月廿五", LunarData.getYearName(lunar.getLunarYear())
                 + "年" + lunar.getLunar(false));
 
         Calendar c1 = Calendar.getInstance();
@@ -97,7 +99,7 @@ public class LocalTest {
         c2.set(Calendar.MONTH, 2);
         c2.set(Calendar.DATE, 1);
 
-        System.out.println(LunarCalendar.solarDiff(c1, c2, Calendar.DATE));
+        System.out.println(LunarUtils.solarDiff(c1, c2, Calendar.DATE));
         System.out.println(df.format(c1.getTime()));
         System.out.println(df.format(c2.getTime()));
     }

@@ -1,6 +1,7 @@
 package com.github.heqiao2010.lunar.test;
 
 import com.github.heqiao2010.lunar.LunarCalendar;
+import com.github.heqiao2010.lunar.LunarData;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -73,11 +74,11 @@ public class HkOTest {
             String lunarMoth1;
             String fullLunarName = lunar.getFullLunarName();
             if (lunar.isLeapMonth()){
-                lunarMoth1 = "閏" + LunarCalendar.getMonthName(lunar.getLunarMonth()) + "月";
+                lunarMoth1 = "閏" + LunarData.getMonthName(lunar.getLunarMonth()) + "月";
             } else {
-                lunarMoth1 = LunarCalendar.getMonthName(lunar.getLunarMonth()) + "月";
+                lunarMoth1 = LunarData.getMonthName(lunar.getLunarMonth()) + "月";
             }
-            String lunarDate1 = LunarCalendar.getDayName(lunar.getDayOfLunarMonth());
+            String lunarDate1 = LunarData.getDayName(lunar.getDayOfLunarMonth());
             String lunarDate2 = parseLunarDate(lines[i]);
             if (lunarDate2.endsWith("月")) {
                 // 月份
@@ -123,8 +124,8 @@ public class HkOTest {
         System.out.println(year + " -> " + lunarYear + " " + ganZhi + " " + animalName);
 
         if (lunarYear.equals(String.valueOf(lunar.getLunarYear()))
-            && (ganZhi + "年").equals(LunarCalendar.getTraditionalYearName(lunar.getLunarYear()))
-            && isAnimalEquals(animalName, String.valueOf(LunarCalendar.getAnimalYearName(lunar.getLunarYear())))) {
+            && (ganZhi + "年").equals(LunarData.getTraditionalYearName(lunar.getLunarYear()))
+            && isAnimalEquals(animalName, String.valueOf(LunarData.getAnimalYearName(lunar.getLunarYear())))) {
             return true;
         }
         System.out.println(lunar.getFullLunarName());
