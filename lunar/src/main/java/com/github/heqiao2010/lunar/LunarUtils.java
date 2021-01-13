@@ -56,6 +56,7 @@ public class LunarUtils {
     public static long lengthOfMonth(int lunarYear, int month, boolean isLeapMonth) {
         short[] codes = LunarCodes.monthCodes(lunarYear);
         int i = isLeapMonth ? month + 1 : month;
+        if (codes[0] > 0 && month > codes[0]) i++;
         return LunarCodes.lengthOfMonth(lunarYear, month, codes[i]);
     }
 
