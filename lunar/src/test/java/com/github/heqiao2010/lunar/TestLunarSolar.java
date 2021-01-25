@@ -1,3 +1,5 @@
+package com.github.heqiao2010.lunar;
+
 import com.github.heqiao2010.lunar.LunarCalendar;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
