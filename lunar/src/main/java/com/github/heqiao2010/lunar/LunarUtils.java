@@ -29,17 +29,17 @@ public class LunarUtils {
         long t2 = solar2.getTimeInMillis();
         switch (field) {
             case Calendar.SECOND:
-                return (long) Math.rint((t1 - t2) / 1000);
+                return (long) Math.rint((t1 - t2) / 1000.0);
             case Calendar.MINUTE:
-                return (long) Math.rint((t1 - t2) / (60 * 1000));
+                return (long) Math.rint((t1 - t2) / 60000.0); // 60 * 1000
             case Calendar.HOUR:
-                return (long) Math.rint((t1 - t2) / (3600 * 1000));
+                return (long) Math.rint((t1 - t2) / 3600000.0); //3600 * 1000
             case Calendar.DATE:
-                return (long) Math.rint((t1 - t2) / (24 * 3600 * 1000));
+                return (long) Math.rint((t1 - t2) / 86400000.0); // 24 * 3600 * 1000
             case Calendar.MONTH:
-                return (long) Math.rint((t1 - t2) / (30 * 24 * 3600 * 1000));
+                return (long) Math.rint((t1 - t2) / 2592000000.0); // 30 * 24 * 3600 * 1000
             case Calendar.YEAR:
-                return (long) Math.rint((t1 - t2) / (365 * 24 * 3600 * 1000));
+                return (long) Math.rint((t1 - t2) / 31536000000.0); // 365 * 24 * 3600 * 1000
             default:
                 return -1;
         }
