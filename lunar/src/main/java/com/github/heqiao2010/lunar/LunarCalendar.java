@@ -442,7 +442,7 @@ public class LunarCalendar extends GregorianCalendar {
             this.dayOfLunarMonth = 1 + xDate;
             this.lunarYear = preYear;
             this.lunarMonth = newMonth;
-            this.isLeapMonth = false; // 农历12月不可能为闰月
+            this.isLeapMonth = 0 != leapMonth && (leapMonth == newMonth);
         } else if (solarCodes.length == newMonth + 1 && xDate >= 30) {// 在下一年(公历12月只有30天)
             newMonth = 1; // 农历肯定是1月
             // 取下一年的公历日期码
