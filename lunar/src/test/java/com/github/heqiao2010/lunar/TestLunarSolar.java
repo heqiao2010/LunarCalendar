@@ -18,7 +18,7 @@ public class TestLunarSolar {
 
     @Before
     public void setUp() throws IOException {
-        monthMap = new HashMap<>();
+        monthMap = new HashMap<String, Integer>();
         monthMap.put("正月", 1);
         monthMap.put("二月", 2);
         monthMap.put("三月", 3);
@@ -44,7 +44,7 @@ public class TestLunarSolar {
         monthMap.put("閏十一月", 11);
         monthMap.put("閏十二月", 12);
 
-        dayMap = new HashMap<>();
+        dayMap = new HashMap<String, Integer>();
         dayMap.put("正月", 1);
         dayMap.put("二月", 1);
         dayMap.put("三月", 1);
@@ -99,8 +99,8 @@ public class TestLunarSolar {
         dayMap.put("廿九", 29);
         dayMap.put("三十", 30);
 
-        testCaseList = new ArrayList<>();
-        buildTestCase();
+        testCaseList = new ArrayList<String>();
+        loadTestCase();
     }
 
     /**
@@ -198,9 +198,8 @@ public class TestLunarSolar {
      * @throws IOException
      */
     private LunarDateInfo loadPerFile(String fileName, LunarDateInfo dateInfo) throws IOException {
-        File file = new File(fileName);
         InputStream is = this.getClass().getResourceAsStream(fileName);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "big5"));
 
         boolean skip = true;
         String line;
@@ -213,7 +212,7 @@ public class TestLunarSolar {
             if (!(line.startsWith("1") || line.startsWith("2"))) continue; // 过滤非数据行
 
             String[] items = line.split(" ");
-            List<String> itemList = new ArrayList<>();
+            List<String> itemList = new ArrayList<String>();
             for (String item : items) {
                 item = item.trim();
                 if (StringUtils.isNotBlank(item)) {
@@ -263,6 +262,22 @@ public class TestLunarSolar {
         for (int index = 1901; index < 2101; ++ index) {
             dateInfo = loadPerFile("/T" + index + "c.txt", dateInfo);
         }
+    }
+
+    /**
+     * 加载处理好的测试用例
+     * @throws IOException
+     */
+    private void loadTestCase() throws IOException {
+        InputStream is = this.getClass().getResourceAsStream("/solar_lunar_test.txt");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            testCaseList.add(line);
+        }
+        reader.close();
     }
 
     @Test
