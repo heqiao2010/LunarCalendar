@@ -422,6 +422,7 @@ public class LunarCalendar extends GregorianCalendar {
         int xDate = Long.valueOf(LunarCodes.solarDateCodesDiff(solarCode, solarCodes[newMonth], Calendar.DATE)).intValue();
         if (0 == newMonth) {// 在上一年
             int preYear = solarYear - 1;
+            leapMonth = LunarData.LUNAR_INFO[preYear - LunarData.MINI_YEAR][0];
             short[] preSolarCodes = LunarData.LUNAR_INFO[preYear - LunarData.MINI_YEAR];
             // 取上年农历12月1号公历日期码
             int nearSolarCode = preSolarCodes[preSolarCodes.length - 1]; // 上一年12月1号
