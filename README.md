@@ -13,6 +13,7 @@
 
 支持的语言列表如下：
 - [java](https://github.com/heqiao2010/LunarCalendar/tree/master/java)
+- [js](https://github.com/wvv8oo/lunar)
 - golang
 - python
 - c++
