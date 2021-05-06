@@ -14,6 +14,8 @@
 支持的语言列表如下：
 - [java](https://github.com/heqiao2010/LunarCalendar/tree/master/java)
 - golang
+- python
+- c++
 
 ## Source Code
 
